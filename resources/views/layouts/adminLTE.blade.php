@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Dashboard')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Dashboard') | APGCL - Infra Helpdesk</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -27,9 +28,10 @@
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
 
     <!-- DataTable -->
-    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css"> --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <!-- DataTables Buttons extension -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
 
     @stack('styles')
 </head>
@@ -48,7 +50,21 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        @yield('content-header')
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>@yield('page_title', 'Dashboard')</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+                        @yield('breadcrumb')
+                        {{-- <li class="breadcrumb-item active">@yield('page_title', 'Dashboard')</li> --}}
+                    </ol>
+                </div>
+            </div>
+        </section>
 
         <!-- Main content -->
         <section class="content">
@@ -96,11 +112,16 @@
 {{-- <script src="{{ asset('dist/js/demo.js') }}"></script> --}}
 <script src="{{ asset('dist/js/pages/dashboard.js') }}"></script>
 
-<!-- DataTable -->
-{{-- <script src="https://cdn.datatables.net/2.1.4/js/dataTables.min.js"></script> --}}
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<!-- DataTables JS -->
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<!-- DataTables Buttons JS -->
+<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Sweet Alert JS -->
+<script src="{{ asset('plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
 @stack('scripts')
 </body>
