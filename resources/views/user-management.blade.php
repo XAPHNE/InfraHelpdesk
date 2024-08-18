@@ -2,29 +2,38 @@
 
 @section('title', 'User Management')
 
+@section('page_title', 'User Management')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item active">User Management</li>
+@stop
+
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">User List</h3>
-        <div class="card-tools">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userModal" id="addNewUser">
-                Add New User
-            </button>
+<div class="row justify-content-center">
+    <div class="col grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="d-inline">User List</h2>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#userModal" id="addNewUser"><i class="fas fa-plus"></i> Add New User</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="usersTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Is Admin</th>
+                            <th>Is Vendor</th>
+                            <th>Is Employee</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="card-body">
-        <table id="usersTable" class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Is Admin</th>
-                    <th>Is Vendor</th>
-                    <th>Is Employee</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-        </table>
     </div>
 </div>
 
@@ -54,6 +63,10 @@
                         <input type="password" class="form-control" id="password" name="password">
                     </div>
                     <div class="form-group">
+                        <label for="password_confirmation">Confirm Password</label>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                    </div>
+                    <div class="form-group">
                         <label for="isAdmin">Is Admin</label>
                         <input type="checkbox" id="isAdmin" name="isAdmin" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
                     </div>
@@ -67,7 +80,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-success">Save</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </form>
@@ -90,7 +103,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Confirm</button>
             </div>
         </div>
     </div>
@@ -99,100 +112,93 @@
 @endsection
 
 @push('styles')
-{{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"> --}}
+    {{-- Add Stylesheet here --}}
 @endpush
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function() {
-    var table = $('#usersTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('user-management.index') }}",
-        columns: [
-            { data: 'name', name: 'name' },
-            { data: 'email', name: 'email' },
-            { data: 'isAdmin', name: 'isAdmin', render: function(data, type, row) {
-                return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
-            }},
-            { data: 'isVendor', name: 'isVendor', render: function(data, type, row) {
-                return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
-            }},
-            { data: 'isEmployee', name: 'isEmployee', render: function(data, type, row) {
-                return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
-            }},
-            { data: 'action', name: 'action', orderable: false, searchable: false }
-        ]
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
 
-    $('#addNewUser').click(function() {
-        $('#userModalLabel').text('Add New User');
-        $('#userForm').trigger('reset');
-        $('#userId').val('');
-        $('#userModal').modal('show');
-    });
-
-    $('body').on('click', '.editUser', function() {
-        var userId = $(this).data('id');
-        $.get("{{ route('user-management.index') }}" +'/' + userId +'/edit', function (data) {
-            $('#userModalLabel').text('Edit User');
-            $('#userModal').modal('show');
-            $('#userId').val(data.id);
-            $('#name').val(data.name);
-            $('#email').val(data.email);
-            $('#password').val('');
-            $('#isAdmin').bootstrapToggle(data.isAdmin ? 'on' : 'off');
-            $('#isVendor').bootstrapToggle(data.isVendor ? 'on' : 'off');
-            $('#isEmployee').bootstrapToggle(data.isEmployee ? 'on' : 'off');
-        })
-    });
-
-    $('#userForm').submit(function(e) {
-        e.preventDefault();
-        var formData = new FormData(this);
-        $.ajax({
-            type: "POST",
-            url: "{{ route('user-management.store') }}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#userModal').modal('hide');
-                table.ajax.reload();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.message,
-                });
-            },
-            error: function(response) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Something went wrong!',
-                });
+    $(document).ready(function() {
+        var table = $('#usersTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('user-management.index') }}",
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { data: 'email', name: 'email' },
+                { data: 'isAdmin', name: 'isAdmin', render: function(data, type, row) {
+                    return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
+                }},
+                { data: 'isVendor', name: 'isVendor', render: function(data, type, row) {
+                    return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
+                }},
+                { data: 'isEmployee', name: 'isEmployee', render: function(data, type, row) {
+                    return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
+                }},
+                { data: 'action', name: 'action', orderable: false, searchable: false }
+            ],
+            dom: 'Bfrtip',  // This specifies the placement of the buttons and other table elements
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            layout: {
+                topStart: {
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                }
             }
         });
-    });
 
-    $('body').on('click', '.deleteUser', function() {
-        var userId = $(this).data('id');
-        $('#deleteModal').modal('show');
+        $('#addNewUser').click(function() {
+            $('#userModalLabel').text('Add New User');
+            $('#userForm').trigger('reset');
+            $('#userId').val('');
+            $('#userModal').modal('show');
+        });
 
-        $('#confirmDelete').click(function() {
+        $('body').on('click', '.editUser', function() {
+            var userId = $(this).data('id');
+            $.get("{{ route('user-management.index') }}" +'/' + userId +'/edit', function (data) {
+                $('#userModalLabel').text('Edit User');
+                $('#userModal').modal('show');
+                $('#userId').val(data.id);
+                $('#name').val(data.name);
+                $('#email').val(data.email);
+                $('#password').val('');
+                $('#isAdmin').bootstrapToggle(data.isAdmin ? 'on' : 'off');
+                $('#isVendor').bootstrapToggle(data.isVendor ? 'on' : 'off');
+                $('#isEmployee').bootstrapToggle(data.isEmployee ? 'on' : 'off');
+            })
+        });
+
+        $('#userForm').submit(function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var url = "{{ route('user-management.store') }}";
+
+            if ($('#userId').val()) {
+                url = "{{ route('user-management.update', ':id') }}".replace(':id', $('#userId').val());
+                formData.append('_method', 'PUT');  // Use PUT method for update
+            }
+
             $.ajax({
-                type: "DELETE",
-                url: "{{ route('user-management.store') }}" + '/' + userId,
+                type: "POST",  // POST is used here because formData contains _method=PUT
+                url: url,
+                data: formData,
+                contentType: false,
+                processData: false,
                 success: function(response) {
-                    $('#deleteModal').modal('hide');
+                    $('#userModal').modal('hide');
+                    $('#userForm').trigger('reset');
                     table.ajax.reload();
                     Swal.fire({
                         icon: 'success',
-                        title: 'Deleted!',
+                        title: 'Success',
                         text: response.message,
                     });
                 },
@@ -205,7 +211,42 @@ $(document).ready(function() {
                 }
             });
         });
+
+
+        $('body').on('click', '.deleteUser', function() {
+            var userId = $(this).data('id');
+            $('#deleteModal').modal('show');
+
+            $('#confirmDelete').click(function() {
+                $.ajax({
+                    type: "DELETE",
+                    url: "{{ route('user-management.destroy', ':id') }}".replace(':id', userId), // Corrected route
+                    success: function(response) {
+                        $('#deleteModal').modal('hide');
+                        table.ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: response.message,
+                        });
+                    },
+                    error: function(response) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong!',
+                        });
+                    }
+                });
+            });
+        });
+
+        // Initialize Bootstrap Toggle on modal show
+        $('#userModal').on('shown.bs.modal', function () {
+            $('#isAdmin').bootstrapToggle();
+            $('#isVendor').bootstrapToggle();
+            $('#isEmployee').bootstrapToggle();
+        });
     });
-});
 </script>
 @endpush
