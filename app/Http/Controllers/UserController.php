@@ -18,8 +18,8 @@ class UserController extends Controller
             return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                        $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-primary btn-sm editUser">Edit</a>';
-                        $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteUser">Delete</a>';
+                        $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editUser"><i class="fas fa-edit"></i></a> ';
+                        $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteUser"><i class="fas fa-trash-alt"></i></a>';
                         return $btn;
                     })
                     ->rawColumns(['action'])
@@ -41,21 +41,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = $request->userId;
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-        $user = User::updateOrCreate(
-            ['id' => $userId],
-            [
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => $request->password ? bcrypt($request->password) : User::find($userId)->password,
-                'isAdmin' => $request->has('isAdmin') ? 1 : 0,
-                'isVendor' => $request->has('isVendor') ? 1 : 0,
-                'isEmployee' => $request->has('isEmployee') ? 1 : 0,
-            ]
-        );
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'isAdmin' => $request->has('isAdmin') ? 1 : 0,
+            'isVendor' => $request->has('isVendor') ? 1 : 0,
+            'isEmployee' => $request->has('isEmployee') ? 1 : 0,
+        ]);
 
-        return response()->json(['message' => 'User saved successfully.']);
+        return response()->json(['message' => 'User created successfully.']);
     }
 
     /**
@@ -80,7 +81,23 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password ? bcrypt($request->password) : $user->password,
+            'isAdmin' => $request->has('isAdmin') ? 1 : 0,
+            'isVendor' => $request->has('isVendor') ? 1 : 0,
+            'isEmployee' => $request->has('isEmployee') ? 1 : 0,
+        ]);
+
+        return response()->json(['message' => 'User updated successfully.']);
     }
 
     /**
