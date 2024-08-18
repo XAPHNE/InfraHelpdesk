@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Ticket;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\DataTables;
+
+class TicketController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = Ticket::with(['creator', 'closer']);
+
+            // If the logged-in user is an employee, show only their tickets
+            if (auth()->user()->isEmployee) {
+                $query->where('created_by', auth()->user()->id);
+            }
+
+            $data = $query->latest()->get();
+            return DataTables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($row){
+                        $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
+                        $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteTicket"><i class="fas fa-trash-alt"></i></a>';
+                        return $btn;
+                    })
+                    ->editColumn('created_by', function($row) {
+                        return $row->creator ? $row->creator->name : 'N/A';
+                    })
+                    ->editColumn('closed_by', function($row) {
+                        return $row->closer ? $row->closer->name : 'N/A';
+                    })
+                    ->editColumn('sla_overdue', function($row) {
+                        return $row->sla_overdue ? $row->sla_overdue->format('M d, Y h:i A') : 'N/A';
+                    })
+                    ->editColumn('remarks', function($row) {
+                        return $row->remarks ? : 'N/A';
+                    })
+                    ->editColumn('closed_at', function($row) {
+                        return $row->closed_at ? $row->closed_at->format('M d, Y h:i A') : 'N/A';
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+
+        $users = User::all();
+        return view('ticket-management', compact('users'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'location' => 'required|string',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+    
+        // Generate the ticket number based on location
+        $ticketNumber = $this->generateTicketNumber($request->location);
+    
+        Ticket::create([
+            'ticket_number' => $ticketNumber,
+            'created_by' => Auth::id(),  // Automatically assign the logged-in user
+            'location' => $request->location,
+            'subject' => $request->subject,
+            'description' => $request->description,
+            'sla_overdue' => now()->addDays(2),  // Automatically add 2 days to the current time
+            'status' => 'Open',  // Set status to "Open" by default
+        ]);
+    
+        return response()->json(['message' => 'Ticket created successfully.']);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $ticket = Ticket::find($id);
+        return response()->json($ticket);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'location' => 'required|string',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|string',
+        ]);
+    
+        $ticket = Ticket::findOrFail($id);
+    
+        $ticket->update([
+            'location' => $request->location,
+            'subject' => $request->subject,
+            'description' => $request->description,
+            'status' => $request->status,
+            'closed_by' => $request->status === 'Closed' ? Auth::id() : $ticket->closed_by,
+            'closed_at' => $request->status === 'Closed' ? now() : $ticket->closed_at,
+        ]);
+    
+        return response()->json(['message' => 'Ticket updated successfully.']);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        Ticket::find($id)->delete();
+        return response()->json(['message' => 'Ticket deleted successfully.']);
+    }
+
+    private function generateTicketNumber($location)
+    {
+        $locationCode = strtoupper($location);  // Convert location to uppercase
+        $lastTicket = Ticket::where('location', $location)->latest()->first();
+        $nextNumber = $lastTicket ? (int)substr($lastTicket->ticket_number, -7) + 1 : 1;
+        $nextNumber = str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
+
+        return "APGCL/IIPL/{$locationCode}/{$nextNumber}";
+    }
+}
