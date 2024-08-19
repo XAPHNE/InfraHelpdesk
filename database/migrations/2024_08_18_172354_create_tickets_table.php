@@ -17,8 +17,10 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('closed_by')->nullable();
             $table->enum('location', ['HQ', 'NTPS', 'LTPS', 'LKHEP', 'KLHEP', 'Longku', 'Narengi', 'Jagiroad']);
-            $table->string('subject');
+            $table->enum('subject', ['Desktop', 'Keyboard', 'Laptop', 'Monitor', 'Mouse', 'Network', 'Office', 'Touchpad', 'UPS', 'Other']);
+            $table->string('serial_num')->nullable();
             $table->string('description');
+            $table->enum('call_type', ['Demo', 'Installation', 'Service'])->nullable();
             $table->dateTime('sla_overdue');
             $table->enum('status', ['Open', 'Closed']);
             $table->string('remarks')->nullable();
