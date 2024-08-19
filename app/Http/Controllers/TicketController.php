@@ -21,14 +21,26 @@ class TicketController extends Controller
             // If the logged-in user is an employee, show only their tickets
             if (auth()->user()->isEmployee) {
                 $query->where('created_by', auth()->user()->id);
+            } elseif (auth()->user()->isVendor) {
+                // If vendor_loc is set, filter tickets by location
+                if (!is_null(auth()->user()->vendor_loc)) {
+                    $query->where('location', auth()->user()->vendor_loc);
+                }
             }
 
             $data = $query->latest()->get();
             return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                        $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
-                        $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteTicket"><i class="fas fa-trash-alt"></i></a>';
+                        if (auth()->user()->isAdmin) {
+                            $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
+                            $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteTicket"><i class="fas fa-trash-alt"></i></a>';
+                        } elseif (auth()->user()->isVendor) {
+                            $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
+                        } else {
+                            $btn = '';
+                        }
+                        
                         return $btn;
                     })
                     ->editColumn('created_by', function($row) {
@@ -36,6 +48,12 @@ class TicketController extends Controller
                     })
                     ->editColumn('closed_by', function($row) {
                         return $row->closer ? $row->closer->name : 'N/A';
+                    })
+                    ->editColumn('serial_num', function($row) {
+                        return $row->serial_num ? : 'N/A';
+                    })
+                    ->editColumn('call_type', function($row) {
+                        return $row->call_type ? : 'N/A';
                     })
                     ->editColumn('sla_overdue', function($row) {
                         return $row->sla_overdue ? $row->sla_overdue->format('M d, Y h:i A') : 'N/A';
@@ -69,7 +87,8 @@ class TicketController extends Controller
     {
         $request->validate([
             'location' => 'required|string',
-            'subject' => 'required|string|max:255',
+            'subject' => 'required|string',
+            'serial_num' => 'nullable|string',
             'description' => 'required|string',
         ]);
     
@@ -81,6 +100,7 @@ class TicketController extends Controller
             'created_by' => Auth::id(),  // Automatically assign the logged-in user
             'location' => $request->location,
             'subject' => $request->subject,
+            'serial_num' => $request->serial_num,
             'description' => $request->description,
             'sla_overdue' => now()->addDays(2),  // Automatically add 2 days to the current time
             'status' => 'Open',  // Set status to "Open" by default
@@ -113,8 +133,10 @@ class TicketController extends Controller
     {
         $request->validate([
             'location' => 'required|string',
-            'subject' => 'required|string|max:255',
+            'subject' => 'required|string',
+            'serial_num' => 'nullable|string',
             'description' => 'required|string',
+            'call_type' => 'required|string',
             'status' => 'required|string',
         ]);
     
@@ -123,7 +145,9 @@ class TicketController extends Controller
         $ticket->update([
             'location' => $request->location,
             'subject' => $request->subject,
+            'serial_num' => $request->serial_num,
             'description' => $request->description,
+            'call_type' => $request->call_type,
             'status' => $request->status,
             'closed_by' => $request->status === 'Closed' ? Auth::id() : $ticket->closed_by,
             'closed_at' => $request->status === 'Closed' ? now() : $ticket->closed_at,
