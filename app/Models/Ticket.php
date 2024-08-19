@@ -10,7 +10,7 @@ class Ticket extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $fillable = ['ticket_number', 'created_by', 'closed_by', 'location', 'subject', 'description', 'sla_overdue', 'status', 'remarks', 'closed_at'];
+    public $fillable = ['ticket_number', 'created_by', 'closed_by', 'location', 'subject', 'serial_num', 'description', 'call_type', 'sla_overdue', 'status', 'remarks', 'closed_at'];
 
     protected $casts = [
         'sla_overdue' => 'datetime',
@@ -27,5 +27,10 @@ class Ticket extends Model
     public function closer()
     {
         return $this->belongsTo(User::class, 'closed_by');
+    }
+
+    public function actionsTaken()
+    {
+        return $this->hasMany(ActionTaken::class);
     }
 }
