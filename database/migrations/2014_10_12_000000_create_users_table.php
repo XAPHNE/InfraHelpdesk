@@ -22,17 +22,48 @@ return new class extends Migration
             $table->boolean('isAdmin');
             $table->boolean('isVendor');
             $table->boolean('isEmployee');
+            $table->enum('vendor_loc', ['HQ', 'NTPS', 'LTPS', 'LKHEP', 'KLHEP', 'Longku', 'Narengi', 'Jagiroad'])->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
 
         DB::table('users')->insert([
-            'name' => 'Admin',
+            ['name' => 'Admin',
             'email' => 'admin@apgcl.org',
-            'password' => bcrypt('secret'),
+            'password' => bcrypt('admin@2024'),
             'isAdmin' => 1,
             'isVendor' => 0,
-            'isEmployee' => 0
+            'isEmployee' => 0,
+            'vendor_loc' => null,
+            'created_at' => now(),
+            'updated_at' => now(),],
+            ['name' => 'Subhankar Sarkar',
+            'email' => 'subhankar.sarkar@apgcl.org',
+            'password' => bcrypt('Welcome@2022'),
+            'isAdmin' => 0,
+            'isVendor' => 0,
+            'isEmployee' => 1,
+            'vendor_loc' => null,
+            'created_at' => now(),
+            'updated_at' => now(),],
+            ['name' => 'Nabarun Das',
+            'email' => 'nabarundas.n@interlaceindia.com',
+            'password' => bcrypt('Welcome@2022'),
+            'isAdmin' => 0,
+            'isVendor' => 1,
+            'isEmployee' => 0,
+            'vendor_loc' => null,
+            'created_at' => now(),
+            'updated_at' => now(),],
+            ['name' => 'Niran Deori',
+            'email' => 'niranbikomiyadeori.b@interlaceindia.com',
+            'password' => bcrypt('Welcome@2022'),
+            'isAdmin' => 0,
+            'isVendor' => 1,
+            'isEmployee' => 0,
+            'vendor_loc' => 'HQ',
+            'created_at' => now(),
+            'updated_at' => now(),],
         ]);
     }
 
