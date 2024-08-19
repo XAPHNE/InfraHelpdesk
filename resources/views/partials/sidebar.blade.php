@@ -34,11 +34,11 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add your sidebar menu items here -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ url('dashboard') }}" class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}" class="nav-link">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
-                            <i class="right fas fa-angle-left"></i>
+                            {{-- <i class="right fas fa-angle-left"></i> --}}
                         </p>
                     </a>
                 </li>
@@ -58,14 +58,14 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
                             Reports
                         </p>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </nav>
     </div>
