@@ -22,6 +22,9 @@ class UserController extends Controller
                         $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteUser"><i class="fas fa-trash-alt"></i></a>';
                         return $btn;
                     })
+                    ->editColumn('vendor_loc', function($row) {
+                        return $row->vendor_loc ? : 'N/A';
+                    })
                     ->rawColumns(['action'])
                     ->make(true);
         }
@@ -45,6 +48,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'vendor_loc' => 'nullable|string',
         ]);
 
         User::create([
@@ -54,6 +58,7 @@ class UserController extends Controller
             'isAdmin' => $request->has('isAdmin') ? 1 : 0,
             'isVendor' => $request->has('isVendor') ? 1 : 0,
             'isEmployee' => $request->has('isEmployee') ? 1 : 0,
+            'vendor_loc' => $request->vendor_loc,
         ]);
 
         return response()->json(['message' => 'User created successfully.']);
@@ -85,6 +90,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
+            'vendor_loc' => 'nullable|string',
         ]);
 
         $user = User::findOrFail($id);
@@ -95,6 +101,7 @@ class UserController extends Controller
             'isAdmin' => $request->has('isAdmin') ? 1 : 0,
             'isVendor' => $request->has('isVendor') ? 1 : 0,
             'isEmployee' => $request->has('isEmployee') ? 1 : 0,
+            'vendor_loc' => $request->vendor_loc,
         ]);
 
         return response()->json(['message' => 'User updated successfully.']);
