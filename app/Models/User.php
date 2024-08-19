@@ -25,6 +25,7 @@ class User extends Authenticatable
         'isAdmin',
         'isVendor',
         'isEmployee',
+        'vendor_loc',
     ];
 
     /**
