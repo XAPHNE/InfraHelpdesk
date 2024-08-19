@@ -21,24 +21,28 @@
                 </div>
             </div>
             <div class="card-body">
-                <table id="ticketsTable" class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Ticket Number</th>
-                            <th>Created By</th>
-                            <th>Created At</th>
-                            <th>Location</th>
-                            <th>Subject</th>
-                            <th>SLA Overdue</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
-                            <th>Closed By</th>
-                            <th>Closed At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table id="ticketsTable" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Ticket Number</th>
+                                <th>Created By</th>
+                                <th>Created At</th>
+                                <th>Location</th>
+                                <th>Product</th>
+                                <th>Serial number</th>
+                                <th>Call Type</th>
+                                <th>SLA Overdue</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                                <th>Closed By</th>
+                                <th>Closed At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -71,14 +75,40 @@
                             <option value="Jagiroad">Jagiroad</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" class="form-control" id="subject" name="subject" required @if(auth()->user()->isVendor) readonly @endif>
+                    <div class="form-group @if(auth()->user()->isVendor)disabled @endif">
+                        <label for="subject">Product</label>
+                        <select class="form-control" id="subject" name="subject" required @if(auth()->user()->isVendor) readonly disabled @endif>
+                            <option value="Desktop">Desktop</option>
+                            <option value="Keyboard">Keyboard</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Monitor">Monitor</option>
+                            <option value="Mouse">Mouse</option>
+                            <option value="Network">Network</option>
+                            <option value="Office">Office</option>
+                            <option value="Touchpad">Touchpad</option>
+                            <option value="UPS">UPS</option>
+                            <option class="font-weight-bold" value="Other">Other</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="description">Description</label>
+                        <label for="serial_num">Product serial number (Optional)</label>
+                        <input type="text" class="form-control" id="serial_num" name="serial_num">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Nature of problem</label>
                         <textarea class="form-control" id="description" name="description" required @if(auth()->user()->isVendor) readonly @endif></textarea>
                     </div>
+                    <!-- Type of call Field (Only for Admin or Vendor) -->
+                    @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                        <div class="form-group">
+                            <label for="call_type">Type of call</label>
+                            <select class="form-control" id="call_type" name="call_type">
+                                <option value="Demo">Demo</option>
+                                <option value="Installation">Installation</option>
+                                <option value="Service">Service</option>
+                            </select>
+                        </div>
+                    @endif
                     <!-- Status Field (Only for edit/update) -->
                     <div class="form-group" id="status-group">
                         <label for="status">Status</label>
@@ -155,18 +185,14 @@
                 }},
                 { data: 'location', name: 'location' },
                 { data: 'subject', name: 'subject' },
+                { data: 'serial_num', name: 'serial_num' },
+                { data: 'call_type', name: 'call_type' },
                 { data: 'sla_overdue', name: 'sla_overdue' },
                 { data: 'status', name: 'status' },
                 { data: 'remarks', name: 'remarks' },
                 { data: 'closed_by', name: 'closed_by' },
                 { data: 'closed_at', name: 'closed_at' },
-                { data: 'action', name: 'action', orderable: false, searchable: false, render: function(data, type, row) {
-                    @if(auth()->user()->isAdmin)
-                        return data;
-                    @else
-                        return data.replace(/<a .*class="delete.*<\/a>/, ''); // Remove delete button for non-admin users
-                    @endif
-                }}
+                { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
             // dom: 'Bfrtip',
             // buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -223,7 +249,9 @@
                 $('#location-group').hide(); // Hide the location field for editing
                 $('#status-group').show(); // Show the status field for editing
                 $('#subject').val(data.subject);
+                $('#serial_num').val(data.serial_num);
                 $('#description').val(data.description);
+                $('#call_type').val(data.call_type);
                 $('#remarks').val(data.remarks);
                 $('#status').val(data.status);
 
