@@ -12,10 +12,10 @@
 <div class="row justify-content-center">
     <div class="col grid-margin stretch-card">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-info">
                 <h2 class="d-inline">User List</h2>
                 <div class="card-tools">
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#userModal" id="addNewUser"><i class="fas fa-plus"></i> Add New User</button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#userModal" id="addNewUser"><i class="fas fa-plus"></i> Add New User</button>
                 </div>
             </div>
             <div class="card-body">
@@ -25,6 +25,7 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Vendor Location</th>
                             <th>Is Admin</th>
                             <th>Is Vendor</th>
                             <th>Is Employee</th>
@@ -67,6 +68,19 @@
                         <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                     </div>
                     <div class="form-group">
+                        <label for="vendor_loc">Vendor Location</label>
+                        <select class="form-control" id="vendor_loc" name="vendor_loc">
+                            <option value="HQ">HQ</option>
+                            <option value="NTPS">NTPS</option>
+                            <option value="LTPS">LTPS</option>
+                            <option value="LKHEP">LKHEP</option>
+                            <option value="KLHEP">KLHEP</option>
+                            <option value="Longku">Longku</option>
+                            <option value="Narengi">Narengi</option>
+                            <option value="Jagiroad">Jagiroad</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="isAdmin">Is Admin</label>
                         <input type="checkbox" id="isAdmin" name="isAdmin" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
                     </div>
@@ -79,9 +93,9 @@
                         <input type="checkbox" id="isEmployee" name="isEmployee" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Save</button>
+                <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Save</button>
                 </div>
             </form>
         </div>
@@ -101,7 +115,7 @@
             <div class="modal-body">
                 Are you sure you want to delete this user?
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDelete">Confirm</button>
             </div>
@@ -128,10 +142,13 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('user-management.index') }}",
+            lengthMenu: [5, 10, 25, 50, 100],
+            pageLength: 5,
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
                 { data: 'email', name: 'email' },
+                { data: 'vendor_loc', name: 'vendor_loc', orderable: false, searchable: false },
                 { data: 'isAdmin', name: 'isAdmin', render: function(data, type, row) {
                     return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                 }},
@@ -143,15 +160,39 @@
                 }},
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
-            dom: 'Bfrtip',  // This specifies the placement of the buttons and other table elements
+            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
             buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            layout: {
-                topStart: {
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
+                    }
+                },
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
+                    }
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
+                    }
                 }
-            }
+            ],
         });
 
         $('#addNewUser').click(function() {
@@ -170,6 +211,7 @@
                 $('#name').val(data.name);
                 $('#email').val(data.email);
                 $('#password').val('');
+                $('#vendor_loc').val(data.vendor_loc);
                 $('#isAdmin').bootstrapToggle(data.isAdmin ? 'on' : 'off');
                 $('#isVendor').bootstrapToggle(data.isVendor ? 'on' : 'off');
                 $('#isEmployee').bootstrapToggle(data.isEmployee ? 'on' : 'off');
