@@ -57,6 +57,7 @@
                             <div class="form-group">
                                 <label for="call_type">Type of call</label>
                                 <select class="form-control" id="call_type" name="call_type">
+                                    <option value="" {{ is_null($ticket->call_type) ? 'selected' : '' }}>-- Select --</option>
                                     <option value="Demo" {{ $ticket->call_type == 'Demo' ? 'selected' : '' }}>Demo</option>
                                     <option value="Installation" {{ $ticket->call_type == 'Installation' ? 'selected' : '' }}>Installation</option>
                                     <option value="Service" {{ $ticket->call_type == 'Service' ? 'selected' : '' }}>Service</option>
