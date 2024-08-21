@@ -33,7 +33,7 @@
                                 <th>Product</th>
                                 <th>Serial number</th>
                                 <th>Call Type</th>
-                                <th>SLA Overdue</th>
+                                <th>Time Taken</th>
                                 <th>Status</th>
                                 <th>Remarks</th>
                                 <th>Closed By</th>
@@ -193,7 +193,7 @@
                 { data: 'subject', name: 'subject' },
                 { data: 'serial_num', name: 'serial_num' },
                 { data: 'call_type', name: 'call_type' },
-                { data: 'sla_overdue', name: 'sla_overdue' },
+                { data: 'time_taken', name: 'time_taken' },
                 { data: 'status', name: 'status' },
                 { data: 'remarks', name: 'remarks' },
                 { data: 'closed_by', name: 'closed_by' },
