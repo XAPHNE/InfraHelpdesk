@@ -178,10 +178,16 @@
             pageLength: 5,
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'ticket_number', name: 'ticket_number' },
+                { 
+                    data: 'ticket_number',
+                    name: 'ticket_number',
+                    render: function(data, type, row) {
+                        return '<a href="/ticket-management/' + row.id + '/details">' + data + '</a>';
+                    }
+                },
                 { data: 'created_by', name: 'created_by' },
                 { data: 'created_at', name: 'created_at', render: function(data, type, row) {
-                    return moment(data).format('MMM D, YYYY h:mm A');
+                    return moment(data).format('YYYY-MM-DD HH:mm:ss');
                 }},
                 { data: 'location', name: 'location' },
                 { data: 'subject', name: 'subject' },
