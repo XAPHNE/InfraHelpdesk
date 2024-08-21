@@ -49,16 +49,26 @@
                 <div class="card-body">
                     @if(auth()->user()->isAdmin || auth()->user()->isVendor)
                         <!-- Form (Visible only to Admin and Vendor) -->
-                        <form id="updateTicketForm" method="POST" action="{{ route('ticket-management.update', $ticket->id) }}">
+                        <form id="updateTicketForm" method="POST">
                             @csrf
                             @method('PUT')
-        
+
+                            <!-- Call Type -->
+                            <div class="form-group">
+                                <label for="call_type">Type of call</label>
+                                <select class="form-control" id="call_type" name="call_type">
+                                    <option value="Demo" {{ $ticket->call_type == 'Demo' ? 'selected' : '' }}>Demo</option>
+                                    <option value="Installation" {{ $ticket->call_type == 'Installation' ? 'selected' : '' }}>Installation</option>
+                                    <option value="Service" {{ $ticket->call_type == 'Service' ? 'selected' : '' }}>Service</option>
+                                </select>
+                            </div>
+                        
+                            <!-- Remarks -->
                             <div class="form-group">
                                 <label for="remarks">Remarks:</label>
                                 <textarea name="remarks" id="remarks" class="form-control">{{ old('remarks', $ticket->remarks) }}</textarea>
                             </div>
                         
-        
                             <!-- Status -->
                             <div class="form-group">
                                 <label for="status">Status:</label>
@@ -67,7 +77,7 @@
                                     <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>Closed</option>
                                 </select>
                             </div>
-            
+                        
                             <button type="submit" class="btn btn-primary">Update Ticket</button>
                         </form>
                     @endif
@@ -114,6 +124,7 @@
         }
     });
 
+    // Handle Action Taken form submission
     $('#actionForm').submit(function(e) {
         e.preventDefault();
         $.ajax({
@@ -123,11 +134,54 @@
             success: function(response) {
                 $('#actionModal').modal('hide');
                 location.reload();  // Reload the page to see the new action
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                });
             },
             error: function(response) {
-                alert('Something went wrong!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong!',
+                });
+            }
+        });
+    });
+
+    // Handle Update Ticket form submission
+    $('#updateTicketForm').submit(function(e) {
+        e.preventDefault();
+        
+        // Serialize only the necessary form data
+        var formData = $(this).serialize();
+
+        // Get the ticket ID from a hidden input or elsewhere
+        var ticketId = {{ $ticket->id }};
+        var updateUrl = "{{ route('ticket-management.update', ':id') }}".replace(':id', ticketId);
+
+        $.ajax({
+            type: "POST",
+            url: updateUrl,
+            data: formData,
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                });
+                location.reload();  // Reload the page to see the updated details
+            },
+            error: function(response) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong!',
+                });
             }
         });
     });
 </script>
 @endpush
+
