@@ -33,23 +33,27 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add your sidebar menu items here -->
-                <li class="nav-item">
-                    <a href="{{ url('dashboard') }}" class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>
-                            Dashboard
-                            {{-- <i class="right fas fa-angle-left"></i> --}}
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url('user-management') }}" class="nav-link {{ Request::is('user-management*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>
-                            Users
-                        </p>
-                    </a>
-                </li>
+                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                    <li class="nav-item">
+                        <a href="{{ url('dashboard') }}" class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                Dashboard
+                                {{-- <i class="right fas fa-angle-left"></i> --}}
+                            </p>
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->isAdmin)
+                    <li class="nav-item">
+                        <a href="{{ url('user-management') }}" class="nav-link {{ Request::is('user-management*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                Users
+                            </p>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{ url('ticket-management') }}" class="nav-link {{ Request::is('ticket-management*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-receipt"></i>
