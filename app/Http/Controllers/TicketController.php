@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TicketCreated;
 use App\Models\ActionTaken;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\DataTables;
 
 class TicketController extends Controller
@@ -114,6 +116,20 @@ class TicketController extends Controller
                 'action_taken' => $request->action_taken,
             ]);
         }
+
+        // Send email to the ticket creator
+        Mail::to(Auth::user()->email)->send(new TicketCreated($ticket));
+
+        // Send email to the vendor with the same location
+        if ($ticket->location) {
+            $vendor = User::where('vendor_loc', $ticket->location)->first();
+            if ($vendor) {
+                Mail::to($vendor->email)->send(new TicketCreated($ticket));
+            }
+        }
+
+        // Send email to hw-support@apgcl.org
+        Mail::to('support.hardware@apgcl.org')->send(new TicketCreated($ticket));
     
         return response()->json(['message' => 'Ticket created successfully.']);
     }
@@ -141,35 +157,49 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'location' => 'required|string',
-            'subject' => 'required|string',
-            'serial_num' => 'nullable|string',
-            'description' => 'required|string',
-            'call_type' => 'required|string',
-            'status' => 'required|string',
-        ]);
-    
+        // Find the ticket
         $ticket = Ticket::findOrFail($id);
-    
-        $ticket->update([
-            'location' => $request->location,
-            'subject' => $request->subject,
-            'serial_num' => $request->serial_num,
-            'description' => $request->description,
-            'call_type' => $request->call_type,
-            'status' => $request->status,
-            'closed_by' => $request->status === 'Closed' ? Auth::id() : $ticket->closed_by,
-            'closed_at' => $request->status === 'Closed' ? now() : $ticket->closed_at,
-        ]);
 
-        // Automatically handle remarks for admin or vendor
-        if (auth()->user()->isAdmin || auth()->user()->isVendor) {
-            $ticket->update([
-                'remarks' => $request->remarks,
-            ]);
+        // Create an array to hold the fields that should be updated
+        $updateFields = [];
+
+        // Conditionally add fields to the update array if they exist in the request
+        if ($request->has('location')) {
+            $updateFields['location'] = $request->location;
         }
-    
+
+        if ($request->has('subject')) {
+            $updateFields['subject'] = $request->subject;
+        }
+
+        if ($request->has('serial_num')) {
+            $updateFields['serial_num'] = $request->serial_num;
+        }
+
+        if ($request->has('description')) {
+            $updateFields['description'] = $request->description;
+        }
+
+        if ($request->has('call_type')) {
+            $updateFields['call_type'] = $request->call_type;
+        }
+
+        if ($request->has('status')) {
+            $updateFields['status'] = $request->status;
+            $updateFields['closed_by'] = $request->status === 'Closed' ? Auth::id() : $ticket->closed_by;
+            $updateFields['closed_at'] = $request->status === 'Closed' ? now() : $ticket->closed_at;
+        }
+
+        // Conditionally update remarks only if the user is Admin or Vendor
+        if (auth()->user()->isAdmin || auth()->user()->isVendor) {
+            if ($request->has('remarks')) {
+                $updateFields['remarks'] = $request->remarks;
+            }
+        }
+
+        // Update the ticket with the fields that were present in the request
+        $ticket->update($updateFields);
+
         return response()->json(['message' => 'Ticket updated successfully.']);
     }
 
