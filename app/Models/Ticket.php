@@ -10,7 +10,7 @@ class Ticket extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $fillable = ['ticket_number', 'created_by', 'closed_by', 'location', 'subject', 'serial_num', 'description', 'call_type', 'sla_overdue', 'status', 'remarks', 'closed_at'];
+    public $fillable = ['ticket_number', 'created_by', 'closed_by', 'location', 'subject', 'serial_num', 'description', 'call_type', 'sla_overdue', 'time_taken', 'status', 'remarks', 'closed_at'];
 
     protected $casts = [
         'sla_overdue' => 'datetime',
