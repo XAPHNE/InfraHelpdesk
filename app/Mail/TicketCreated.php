@@ -30,7 +30,7 @@ class TicketCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Ticket Created - ' . $this->ticket->ticket_number,
+            subject: 'New Ticket Raised - ' . $this->ticket->ticket_number,
         );
     }
 
