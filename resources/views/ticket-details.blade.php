@@ -20,7 +20,7 @@
                 <div class="card-body">
                     <h4>Ticket Number: {{ $ticket->ticket_number }}</h4>
                     @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                        <p>Raised by: {{ $ticket->creator->name }}</p>
+                        <p><strong>Raised by:</strong> {{ $ticket->creator->name }}</p>
                     @endif
                     <p><strong>Raised at:</strong> {{ $ticket->created_at->format('M d, Y h:i A') }}</p>
                     <p><strong>Product:</strong> {{ $ticket->subject }}</p>
