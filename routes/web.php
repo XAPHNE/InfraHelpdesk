@@ -22,16 +22,22 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'restrict.employee'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('user-management', UserController::class);
-    Route::resource('ticket-management', TicketController::class);
+    // Only allow ticket management for employees
+    Route::middleware('restrict.employee')->group(function () {
+        Route::resource('ticket-management', TicketController::class);
+    });
+
+    // Admins and Vendors only for User Management
+    Route::middleware('restrict.employee')->group(function () {
+        Route::resource('user-management', UserController::class);
+        Route::post('ticket-management/action-taken', [TicketController::class, 'storeActionTaken'])->name('action-taken.store');
+        Route::get('ticket-management/{id}/details', [TicketController::class, 'show'])->name('ticket-management.details');
+    });
 });
 
 require __DIR__.'/auth.php';
