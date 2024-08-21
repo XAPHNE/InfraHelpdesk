@@ -19,11 +19,27 @@
             <div class="col-md-6">
                 <div class="card-body">
                     <h4>Ticket Number: {{ $ticket->ticket_number }}</h4>
+                    @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                        <p>Raised by: {{ $ticket->creator->name }}</p>
+                    @endif
+                    <p><strong>Raised at:</strong> {{ $ticket->created_at->format('M d, Y h:i A') }}</p>
                     <p><strong>Product:</strong> {{ $ticket->subject }}</p>
                     <p><strong>Nature of Problem:</strong> {{ $ticket->description }}</p>
                     <p><strong>Location:</strong> {{ $ticket->location }}</p>
                     <p><strong>Status:</strong> {{ $ticket->status }}</p>
-                    <p><strong>SLA Overdue:</strong> {{ $ticket->sla_overdue->format('M d, Y h:i A') }}</p>
+                    {{-- <p><strong>SLA Overdue on:</strong> {{ $ticket->sla_overdue->format('M d, Y h:i A') }}</p> --}}
+                    @if ($ticket->closed_at)
+                        <p><strong>Closed at:</strong> {{ $ticket->closed_at->format('M d, Y h:i A') }}</p>
+                    @endif
+                    @if (!is_null($ticket->time_taken))
+                        <p><strong>Time Taken:</strong> 
+                            @if ($ticket->time_taken == 0)
+                                Less than 1 Minute
+                            @else
+                                {{ $ticket->time_taken }} Minutes
+                            @endif
+                        </p>
+                    @endif
                     <!-- Other ticket details -->
         
                     <hr>
