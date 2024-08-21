@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActionTaken;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -56,13 +57,13 @@ class TicketController extends Controller
                         return $row->call_type ? : 'N/A';
                     })
                     ->editColumn('sla_overdue', function($row) {
-                        return $row->sla_overdue ? $row->sla_overdue->format('M d, Y h:i A') : 'N/A';
+                        return $row->sla_overdue ? : 'N/A';
                     })
                     ->editColumn('remarks', function($row) {
                         return $row->remarks ? : 'N/A';
                     })
                     ->editColumn('closed_at', function($row) {
-                        return $row->closed_at ? $row->closed_at->format('M d, Y h:i A') : 'N/A';
+                        return $row->closed_at ? : 'N/A';
                     })
                     ->rawColumns(['action'])
                     ->make(true);
@@ -90,12 +91,13 @@ class TicketController extends Controller
             'subject' => 'required|string',
             'serial_num' => 'nullable|string',
             'description' => 'required|string',
+            'action_taken' => 'nullable|string',
         ]);
     
         // Generate the ticket number based on location
         $ticketNumber = $this->generateTicketNumber($request->location);
     
-        Ticket::create([
+        $ticket = Ticket::create([
             'ticket_number' => $ticketNumber,
             'created_by' => Auth::id(),  // Automatically assign the logged-in user
             'location' => $request->location,
@@ -105,6 +107,13 @@ class TicketController extends Controller
             'sla_overdue' => now()->addDays(2),  // Automatically add 2 days to the current time
             'status' => 'Open',  // Set status to "Open" by default
         ]);
+        
+        // If there is an action taken, store it
+        if ($request->action_taken) {
+            $ticket->actionTakens()->create([
+                'action_taken' => $request->action_taken,
+            ]);
+        }
     
         return response()->json(['message' => 'Ticket created successfully.']);
     }
@@ -114,7 +123,8 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $ticket = Ticket::with('actionTakens')->findOrFail($id);
+        return view('ticket-details', compact('ticket'));
     }
 
     /**
@@ -122,7 +132,7 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        $ticket = Ticket::find($id);
+        $ticket = Ticket::with('actionTakens')->findOrFail($id);
         return response()->json($ticket);
     }
 
@@ -152,6 +162,13 @@ class TicketController extends Controller
             'closed_by' => $request->status === 'Closed' ? Auth::id() : $ticket->closed_by,
             'closed_at' => $request->status === 'Closed' ? now() : $ticket->closed_at,
         ]);
+
+        // Automatically handle remarks for admin or vendor
+        if (auth()->user()->isAdmin || auth()->user()->isVendor) {
+            $ticket->update([
+                'remarks' => $request->remarks,
+            ]);
+        }
     
         return response()->json(['message' => 'Ticket updated successfully.']);
     }
@@ -173,5 +190,20 @@ class TicketController extends Controller
         $nextNumber = str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
 
         return "APGCL/IIPL/{$locationCode}/{$nextNumber}";
+    }
+
+    public function storeActionTaken(Request $request)
+    {
+        $request->validate([
+            'ticket_id' => 'required|exists:tickets,id',
+            'action_taken' => 'required|string|max:255',
+        ]);
+
+        ActionTaken::create([
+            'ticket_id' => $request->ticket_id,
+            'action_taken' => $request->action_taken,
+        ]);
+
+        return response()->json(['message' => 'Action taken added successfully.']);
     }
 }
