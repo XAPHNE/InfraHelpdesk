@@ -58,8 +58,8 @@ class TicketController extends Controller
                     ->editColumn('call_type', function($row) {
                         return $row->call_type ? : 'N/A';
                     })
-                    ->editColumn('sla_overdue', function($row) {
-                        return $row->sla_overdue ? : 'N/A';
+                    ->editColumn('time_taken', function($row) {
+                        return $row->time_taken ? : 'N/A';
                     })
                     ->editColumn('remarks', function($row) {
                         return $row->remarks ? : 'N/A';
@@ -106,7 +106,7 @@ class TicketController extends Controller
             'subject' => $request->subject,
             'serial_num' => $request->serial_num,
             'description' => $request->description,
-            'sla_overdue' => now()->addDays(2),  // Automatically add 2 days to the current time
+            'sla_overdue' => now()->addDays(2),  // Automatically add 2 days to the current time 
             'status' => 'Open',  // Set status to "Open" by default
         ]);
         
@@ -186,8 +186,15 @@ class TicketController extends Controller
 
         if ($request->has('status')) {
             $updateFields['status'] = $request->status;
-            $updateFields['closed_by'] = $request->status === 'Closed' ? Auth::id() : $ticket->closed_by;
-            $updateFields['closed_at'] = $request->status === 'Closed' ? now() : $ticket->closed_at;
+    
+            if ($request->status === 'Closed') {
+                $updateFields['closed_by'] = Auth::id();
+                $updateFields['closed_at'] = now();
+    
+                // Calculate the time_taken and store it in hours (or any other unit you prefer)
+                $timeTaken = $ticket->created_at->diffInMinutes(now());
+                $updateFields['time_taken'] = $timeTaken;
+            }
         }
 
         // Conditionally update remarks only if the user is Admin or Vendor
