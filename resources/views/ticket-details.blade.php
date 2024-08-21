@@ -47,29 +47,30 @@
             <!-- Form to Update Ticket -->
             <div class="col-md-6">
                 <div class="card-body">
-                    <form id="updateTicketForm" method="POST" action="{{ route('ticket-management.update', $ticket->id) }}">
-                        @csrf
-                        @method('PUT')
+                    @if(auth()->user()->isAdmin || auth()->user()->isVendor)
+                        <!-- Form (Visible only to Admin and Vendor) -->
+                        <form id="updateTicketForm" method="POST" action="{{ route('ticket-management.update', $ticket->id) }}">
+                            @csrf
+                            @method('PUT')
         
-                        <!-- Remarks (Visible only to Admin and Vendor) -->
-                        @if(auth()->user()->isAdmin || auth()->user()->isVendor)
                             <div class="form-group">
                                 <label for="remarks">Remarks:</label>
                                 <textarea name="remarks" id="remarks" class="form-control">{{ old('remarks', $ticket->remarks) }}</textarea>
                             </div>
-                        @endif
+                        
         
-                        <!-- Status -->
-                        <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select name="status" id="status" class="form-control">
-                                <option value="Open" {{ $ticket->status == 'Open' ? 'selected' : '' }}>Open</option>
-                                <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>Closed</option>
-                            </select>
-                        </div>
-        
-                        <button type="submit" class="btn btn-primary">Update Ticket</button>
-                    </form>
+                            <!-- Status -->
+                            <div class="form-group">
+                                <label for="status">Status:</label>
+                                <select name="status" id="status" class="form-control">
+                                    <option value="Open" {{ $ticket->status == 'Open' ? 'selected' : '' }}>Open</option>
+                                    <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>Closed</option>
+                                </select>
+                            </div>
+            
+                            <button type="submit" class="btn btn-primary">Update Ticket</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
