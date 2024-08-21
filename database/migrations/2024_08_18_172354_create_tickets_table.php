@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('description');
             $table->enum('call_type', ['Demo', 'Installation', 'Service'])->nullable();
             $table->dateTime('sla_overdue');
+            $table->integer('time_taken')->nullable();
             $table->enum('status', ['Open', 'Closed']);
             $table->string('remarks')->nullable();
             $table->dateTime('closed_at')->nullable();
