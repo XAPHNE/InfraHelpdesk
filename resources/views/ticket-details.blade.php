@@ -31,14 +31,8 @@
                     @if ($ticket->closed_at)
                         <p><strong>Closed at:</strong> {{ $ticket->closed_at->format('M d, Y h:i A') }}</p>
                     @endif
-                    @if (!is_null($ticket->time_taken))
-                        <p><strong>Time Taken:</strong> 
-                            @if ($ticket->time_taken == 0)
-                                Less than 1 Minute
-                            @else
-                                {{ $ticket->time_taken }} Minutes
-                            @endif
-                        </p>
+                    @if ($ticket->time_taken)
+                        <p><strong>Time Taken:</strong> {{ $ticket->time_taken_human }}</p>
                     @endif
                     <!-- Other ticket details -->
         
@@ -98,6 +92,26 @@
                             <button type="submit" class="btn btn-primary">Update Ticket</button>
                         </form>
                     @endif
+                    @if (auth()->user()->isEmployee)
+                        <form id="updateTicketForm" method="POST">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="form-group">
+                                <label for="mark_as_complete">
+                                    <input type="checkbox" id="mark_as_complete" name="mark_as_complete" 
+                                        {{ $ticket->isClosedByEmployee ? 'checked disabled' : '' }}>
+                                    Mark as Complete
+                                </label>
+                            </div>
+
+                            @if (!$ticket->isClosedByEmployee)
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            @else
+                                <p><strong>Marked as complete on:</strong> {{ $ticket->closedByEmployee_at->format('M d, Y h:i A') }}</p>
+                            @endif
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
@@ -140,7 +154,6 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     // Handle Action Taken form submission
     $('#actionForm').submit(function(e) {
         e.preventDefault();
