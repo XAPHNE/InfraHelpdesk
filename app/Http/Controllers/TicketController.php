@@ -19,31 +19,18 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Ticket::with(['creator', 'closer']);
-
-            // If the logged-in user is an employee, show only their tickets
-            if (auth()->user()->isEmployee) {
-                $query->where('created_by', auth()->user()->id);
-            } elseif (auth()->user()->isVendor) {
-                // If vendor_loc is set, filter tickets by location
-                if (!is_null(auth()->user()->vendor_loc)) {
-                    $query->where('location', auth()->user()->vendor_loc);
-                }
-            }
-
-            $data = $query->latest()->get();
+            $data = Ticket::with(['creator', 'closer'])->latest()->get();
+    
             return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
+                        $btn = '';
                         if (auth()->user()->isAdmin) {
-                            $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
+                            $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
                             $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="delete btn btn-danger btn-sm deleteTicket"><i class="fas fa-trash-alt"></i></a>';
                         } elseif (auth()->user()->isVendor) {
-                            $btn = '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
-                        } else {
-                            $btn = '';
+                            $btn .= '<a href="javascript:void(0)" data-id="'.$row->id.'" class="edit btn btn-warning btn-sm editTicket"><i class="fas fa-edit"></i></a> ';
                         }
-                        
                         return $btn;
                     })
                     ->editColumn('created_by', function($row) {
@@ -59,7 +46,7 @@ class TicketController extends Controller
                         return $row->call_type ? : 'N/A';
                     })
                     ->editColumn('time_taken', function($row) {
-                        return $row->time_taken ? : 'N/A';
+                        return $row->time_taken_human ? : 'N/A';
                     })
                     ->editColumn('remarks', function($row) {
                         return $row->remarks ? : 'N/A';
@@ -70,7 +57,7 @@ class TicketController extends Controller
                     ->rawColumns(['action'])
                     ->make(true);
         }
-
+    
         $users = User::all();
         return view('ticket-management', compact('users'));
     }
@@ -139,7 +126,7 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        $ticket = Ticket::with('actionTakens')->findOrFail($id);
+        $ticket = Ticket::find($id);
         return view('ticket-details', compact('ticket'));
     }
 
@@ -164,6 +151,11 @@ class TicketController extends Controller
         $updateFields = [];
 
         // Conditionally add fields to the update array if they exist in the request
+        if ($request->has('mark_as_complete') && auth()->user()->isEmployee) {
+            $updateFields['isClosedByEmployee'] = true;
+            $updateFields['closedByEmployee_at'] = now();
+        }
+
         if ($request->has('location')) {
             $updateFields['location'] = $request->location;
         }
@@ -243,4 +235,6 @@ class TicketController extends Controller
 
         return response()->json(['message' => 'Action taken added successfully.']);
     }
+
+
 }
