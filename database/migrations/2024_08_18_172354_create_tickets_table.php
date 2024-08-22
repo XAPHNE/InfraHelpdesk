@@ -25,6 +25,8 @@ return new class extends Migration
             $table->integer('time_taken')->nullable();
             $table->enum('status', ['Open', 'Closed']);
             $table->string('remarks')->nullable();
+            $table->boolean('isClosedByEmployee')->default(false);
+            $table->dateTime('closedByEmployee_at')->nullable();
             $table->dateTime('closed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
