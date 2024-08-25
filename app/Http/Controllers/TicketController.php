@@ -6,6 +6,7 @@ use App\Mail\TicketCreated;
 use App\Models\ActionTaken;
 use App\Models\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -13,6 +14,71 @@ use Yajra\DataTables\DataTables;
 
 class TicketController extends Controller
 {
+    public function dashboard()
+    {
+        $currentYear = Carbon::now()->year;
+        $currentQuarter = Carbon::now()->quarter;
+        $currentMonth = Carbon::now()->month;
+
+        // Open tickets for the current quarter
+        $openTicketsQuarter = Ticket::where('status', 'Open')
+            ->whereYear('created_at', $currentYear)
+            ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
+            ->count();
+
+        // Closed tickets for the current quarter
+        $closedTicketsQuarter = Ticket::where('status', 'Closed')
+            ->whereYear('created_at', $currentYear)
+            ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
+            ->count();
+
+        // Open tickets for the current month
+        $openTicketsMonth = Ticket::where('status', 'Open')
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+
+        // Closed tickets for the current month
+        $closedTicketsMonth = Ticket::where('status', 'Closed')
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+
+        // SLA overdue tickets for the current year
+        $slaOverdueYear = Ticket::where('sla_overdue', '<', now())
+            ->whereYear('sla_overdue', $currentYear)
+            ->count();
+
+        // SLA overdue tickets for the current quarter
+        $slaOverdueQuarter = Ticket::where('sla_overdue', '<', now())
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
+            ->count();
+
+        // SLA overdue tickets for the current month
+        $slaOverdueMonth = Ticket::where('sla_overdue', '<', now())
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $currentMonth)
+            ->count();
+
+        // SLA overdue tickets for the last month
+        $lastMonth = Carbon::now()->subMonth()->month;
+        $slaOverdueLastMonth = Ticket::where('sla_overdue', '<', now())
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $lastMonth)
+            ->count();
+
+        return view('dashboard', compact(
+            'openTicketsQuarter', 
+            'closedTicketsQuarter', 
+            'openTicketsMonth', 
+            'closedTicketsMonth',
+            'slaOverdueYear',
+            'slaOverdueQuarter',
+            'slaOverdueMonth',
+            'slaOverdueLastMonth'
+        ));
+    }
     /**
      * Display a listing of the resource.
      */
