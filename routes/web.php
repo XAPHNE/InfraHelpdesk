@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('user-management', UserController::class);
         Route::post('ticket-management/action-taken', [TicketController::class, 'storeActionTaken'])->name('action-taken.store');
         Route::get('ticket-management/{id}/details', [TicketController::class, 'show'])->name('ticket-management.details');
+        Route::get('/dashboard', [TicketController::class, 'dashboard'])->name('dashboard');
     });
 });
 
