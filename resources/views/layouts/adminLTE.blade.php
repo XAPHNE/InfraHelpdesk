@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') | APGCL - Infra Helpdesk</title>
+    <title>@yield('title', 'Dashboard') | {{ config('app.name') }}</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
 
     <!-- DataTable -->
+    {{-- <link href="{{ asset('plugins/datatables.net/datatables.min.css') }}" rel="stylesheet"> --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <!-- DataTables Buttons extension -->
@@ -39,7 +40,7 @@
 <div class="wrapper">
     <!-- Preloader -->
     <div class="preloader flex-column justify-content-center align-items-center">
-        <img class="animation__shake" src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTELogo" height="60" width="60">
+        <img class="animation__shake" src="{{ asset('dist/img/Logo1222.png') }}" alt="APGCLLogo" height="60" width="60">
     </div>
 
     <!-- Navbar -->
@@ -110,9 +111,10 @@
 <!-- AdminLTE App -->
 <script src="{{ asset('dist/js/adminlte.js') }}"></script>
 {{-- <script src="{{ asset('dist/js/demo.js') }}"></script> --}}
-<script src="{{ asset('dist/js/pages/dashboard.js') }}"></script>
+{{-- <script src="{{ asset('dist/js/pages/dashboard.js') }}"></script> --}}
 
 <!-- DataTables JS -->
+{{-- <script src="{{ asset('plugins/datatables.net/datatables.min.js') }}"></script> --}}
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <!-- DataTables Buttons JS -->
 <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>

@@ -1,5 +1,5 @@
 <footer class="main-footer">
-    <strong>Copyright &copy; {{ date('Y') }} - <a href="https://support.apgcl.org">APGCL Infra Helpdesk</a>.</strong>
+    <strong>Copyright &copy; {{ date('Y') }} - <a href="https://support.apgcl.org">{{ config('app.name') }}</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
         <b>Version</b> 1.0
