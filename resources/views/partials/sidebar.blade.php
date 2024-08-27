@@ -70,6 +70,15 @@
                         </p>
                     </a>
                 </li> --}}
+                <li class="nav-header">Settings</li>
+                <li class="nav-item">
+                    <a href="{{ url('profile') }}" class="nav-link {{ Request::is('profile*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Profile
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

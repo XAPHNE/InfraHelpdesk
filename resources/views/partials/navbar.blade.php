@@ -70,7 +70,7 @@
                         <i class="fas fa-user-circle fa-5x text-white"></i>
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="dropdown-item">
+                        <a href="profile" class="dropdown-item">
                             <i class="fas fa-user mr-2"></i> Profile
                         </a>
                         <div class="dropdown-divider"></div>
