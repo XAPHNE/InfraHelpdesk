@@ -81,6 +81,10 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="must_change_passwd">Must Change Password</label>
+                        <input type="checkbox" id="must_change_passwd" name="must_change_passwd" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
+                    </div>
+                    <div class="form-group">
                         <label for="isAdmin">Is Admin</label>
                         <input type="checkbox" id="isAdmin" name="isAdmin" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
                     </div>
@@ -212,6 +216,7 @@
                 $('#email').val(data.email);
                 $('#password').val('');
                 $('#vendor_loc').val(data.vendor_loc);
+                $('#must_change_passwd').bootstrapToggle(data.must_change_passwd ? 'on' : 'off');
                 $('#isAdmin').bootstrapToggle(data.isAdmin ? 'on' : 'off');
                 $('#isVendor').bootstrapToggle(data.isVendor ? 'on' : 'off');
                 $('#isEmployee').bootstrapToggle(data.isEmployee ? 'on' : 'off');
@@ -285,6 +290,7 @@
 
         // Initialize Bootstrap Toggle on modal show
         $('#userModal').on('shown.bs.modal', function () {
+            $('#must_change_passwd').bootstrapToggle();
             $('#isAdmin').bootstrapToggle();
             $('#isVendor').bootstrapToggle();
             $('#isEmployee').bootstrapToggle();
