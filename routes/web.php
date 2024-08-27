@@ -22,10 +22,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified', 'restrict.employee'])->name('dashboard');
+})->middleware(['auth', 'verified', 'must.change.password', 'restrict.employee'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::middleware(['auth', 'must.change.password'])->group(function () {
+    Route::resource('profile', ProfileController::class);
 
     // Only allow ticket management for employees
     Route::middleware('restrict.employee')->group(function () {
