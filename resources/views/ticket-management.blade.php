@@ -272,11 +272,18 @@
             e.preventDefault();
             var formData = new FormData(this);
             var url = "{{ route('ticket-management.store') }}";
+            var $submitButton = $(this).find('button[type="submit"]');
+            var $closeButton = $(this).find('button[class="close"]');
+            alert("Please give a moment for processing");
 
             if ($('#ticket_id').val()) {
                 url = "{{ route('ticket-management.update', ':id') }}".replace(':id', $('#ticket_id').val());
                 formData.append('_method', 'PUT');
             }
+
+            // Disable the save button
+            $submitButton.prop('disabled', true);
+            $closeButton.prop('disabled', true);
 
             $.ajax({
                 type: "POST",
@@ -285,6 +292,8 @@
                 contentType: false,
                 processData: false,
                 success: function(response) {
+                    $submitButton.prop('disabled', false);
+                    $closeButton.prop('disabled', true);
                     $('#ticketModal').modal('hide');
                     $('#ticketForm').trigger('reset');
                     table.ajax.reload();
@@ -295,12 +304,18 @@
                     });
                 },
                 error: function(response) {
+                    $submitButton.prop('disabled', false);
+                    $closeButton.prop('disabled', true);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
                         text: 'Something went wrong!',
                     });
-                }
+                },
+                // complete: function() {
+                //     // Re-enable the save button
+                //     $submitButton.prop('disabled', false);
+                // }
             });
         });
 
