@@ -85,19 +85,18 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $query = Ticket::with(['creator', 'closer']);
             // Check if the logged-in user is an employee
             if (auth()->user()->isEmployee) {
                 // Fetch tickets created by the logged-in employee
-                $data = Ticket::with(['creator', 'closer'])
-                    ->where('created_by', auth()->user()->id)
-                    ->latest()
-                    ->get();
+                $query->where('created_by', auth()->user()->id);
             } else {
                 // Fetch all tickets for non-employee users (Admins or Vendors)
-                $data = Ticket::with(['creator', 'closer'])
-                    ->latest()
-                    ->get();
+                if ($request->has('start_date') && $request->has('end_date') && $request->start_date && $request->end_date) {
+                    $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+                }
             }
+            $data = $query->latest()->get();
     
             return DataTables::of($data)
                     ->addIndexColumn()

@@ -21,6 +21,19 @@
                 </div>
             </div>
             <div class="card-body">
+                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="date" id="start_date" class="form-control" placeholder="Start Date">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="end_date" class="form-control" placeholder="End Date">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="filter" class="btn btn-info">Filter</button>
+                        </div>
+                    </div>
+                @endif
                 <div class="table-responsive">
                     <table id="ticketsTable" class="table table-bordered table-hover">
                         <thead>
@@ -188,7 +201,15 @@
         var table = $('#ticketsTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('ticket-management.index') }}",
+            ajax: {
+                url: "{{ route('ticket-management.index') }}",
+                data: function(d) {
+                    if (isAdmin || isVendor) {
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                    }
+                }
+            },
             lengthMenu: [5, 10, 25, 50, 100],
             pageLength: 5,
             columns: [
@@ -256,6 +277,11 @@
             //         }
             //     }
             // ],
+        });
+
+        // Event listener for the filter button
+        $('#filter').click(function() {
+            table.draw();
         });
 
         $('#addNewTicket').click(function() {
