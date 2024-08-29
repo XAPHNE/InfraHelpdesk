@@ -38,11 +38,11 @@
                 <!-- Forgot Password -->
                 <div class="row">
                     <div class="col-8">
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="primary">
                                 <a href="{{ url('forgot-password') }}">Forgot Password</a>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <!-- /.col -->
                     <div class="col-4">
