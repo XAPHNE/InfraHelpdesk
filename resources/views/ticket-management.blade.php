@@ -27,18 +27,26 @@
                             <tr>
                                 <th>#</th>
                                 <th>Ticket Number</th>
-                                <th>Created By</th>
+                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                    <th>Created By</th>
+                                @endif
                                 <th>Created At</th>
-                                <th>Location</th>
+                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                    <th>Location</th>
+                                @endif
                                 <th>Product</th>
                                 <th>Serial number</th>
-                                <th>Call Type</th>
-                                <th>Time Taken</th>
+                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                    <th>Call Type</th>
+                                    <th>Time Taken</th>
+                                @endif
                                 <th>Status</th>
                                 <th>Remarks</th>
                                 <th>Closed By</th>
                                 <th>Closed At</th>
-                                <th>Actions</th>
+                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                    <th>Actions</th>
+                                @endif
                             </tr>
                         </thead>
                     </table>
@@ -173,6 +181,10 @@
     });
 
     $(document).ready(function() {
+        // Pass the user's role information from Blade to JavaScript
+        var isAdmin = @json(auth()->user()->isAdmin);
+        var isVendor = @json(auth()->user()->isVendor);
+
         var table = $('#ticketsTable').DataTable({
             processing: true,
             serverSide: true,
@@ -188,56 +200,62 @@
                         return '<a href="/ticket-management/' + row.id + '/details">' + data + '</a>';
                     }
                 },
-                { data: 'created_by', name: 'created_by' },
+                // Conditionally add 'Created By' column
+                ...(isAdmin || isVendor ? [{ data: 'created_by', name: 'created_by' }] : []),
                 { data: 'created_at', name: 'created_at', render: function(data, type, row) {
                     return moment(data).format('YYYY-MM-DD HH:mm:ss');
                 }},
-                { data: 'location', name: 'location' },
+                // Conditionally add 'Location' column
+                ...(isAdmin || isVendor ? [{ data: 'location', name: 'location' }] : []),
                 { data: 'subject', name: 'subject' },
                 { data: 'serial_num', name: 'serial_num' },
-                { data: 'call_type', name: 'call_type' },
-                { data: 'time_taken', name: 'time_taken' },
+                // Conditionally add 'Call Type' and 'Time Taken' columns
+                ...(isAdmin || isVendor ? [
+                    { data: 'call_type', name: 'call_type' },
+                    { data: 'time_taken', name: 'time_taken' }
+                ] : []),
                 { data: 'status', name: 'status' },
                 { data: 'remarks', name: 'remarks' },
                 { data: 'closed_by', name: 'closed_by' },
                 { data: 'closed_at', name: 'closed_at' },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                // Conditionally add 'Actions' column
+                ...(isAdmin || isVendor ? [{ data: 'action', name: 'action', orderable: false, searchable: false }] : [])
             ],
             // dom: 'Bfrtip',
             // buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
             dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-            buttons: [
-                {
-                    extend: 'copy',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'csv',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'excel',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                }
-            ],
+            // buttons: [
+            //     {
+            //         extend: 'copy',
+            //         exportOptions: {
+            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
+            //         }
+            //     },
+            //     {
+            //         extend: 'csv',
+            //         exportOptions: {
+            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
+            //         }
+            //     },
+            //     {
+            //         extend: 'excel',
+            //         exportOptions: {
+            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
+            //         }
+            //     },
+            //     {
+            //         extend: 'pdf',
+            //         exportOptions: {
+            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
+            //         }
+            //     },
+            //     {
+            //         extend: 'print',
+            //         exportOptions: {
+            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
+            //         }
+            //     }
+            // ],
         });
 
         $('#addNewTicket').click(function() {
