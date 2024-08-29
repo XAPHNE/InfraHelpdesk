@@ -70,6 +70,7 @@
                     <div class="form-group">
                         <label for="vendor_loc">Vendor Location</label>
                         <select class="form-control" id="vendor_loc" name="vendor_loc">
+                            <option value="">Select</option>
                             <option value="HQ">HQ</option>
                             <option value="NTPS">NTPS</option>
                             <option value="LTPS">LTPS</option>
