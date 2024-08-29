@@ -65,6 +65,7 @@
                     <div class="form-group" id="location-group">
                         <label for="location">Location</label>
                         <select class="form-control" id="location" name="location" required>
+                            <option value="">Select</option>
                             <option value="HQ">HQ</option>
                             <option value="NTPS">NTPS</option>
                             <option value="LTPS">LTPS</option>
@@ -78,6 +79,7 @@
                     <div class="form-group @if(auth()->user()->isVendor)disabled @endif">
                         <label for="subject">Product</label>
                         <select class="form-control" id="subject" name="subject" required @if(auth()->user()->isVendor) readonly disabled @endif>
+                            <option value="">Select</option>
                             <option value="Desktop">Desktop</option>
                             <option value="Keyboard">Keyboard</option>
                             <option value="Laptop">Laptop</option>
@@ -103,6 +105,7 @@
                         <div class="form-group">
                             <label for="call_type">Type of call</label>
                             <select class="form-control" id="call_type" name="call_type">
+                                <option value="">Select</option>
                                 <option value="Demo">Demo</option>
                                 <option value="Installation">Installation</option>
                                 <option value="Service">Service</option>
