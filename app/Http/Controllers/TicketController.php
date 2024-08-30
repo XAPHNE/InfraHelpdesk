@@ -93,7 +93,10 @@ class TicketController extends Controller
             } else {
                 // Fetch all tickets for non-employee users (Admins or Vendors)
                 if ($request->has('start_date') && $request->has('end_date') && $request->start_date && $request->end_date) {
-                    $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+                    // Ensure the start and end dates include the full day
+                    $startDate = Carbon::parse($request->start_date)->startOfDay();
+                    $endDate = Carbon::parse($request->end_date)->endOfDay();
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
                 }
             }
             $data = $query->latest()->get();

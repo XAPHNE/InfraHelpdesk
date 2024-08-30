@@ -29,8 +29,9 @@
                         <div class="col-md-3">
                             <input type="date" id="end_date" class="form-control" placeholder="End Date">
                         </div>
-                        <div class="col-md-2">
-                            <button id="filter" class="btn btn-info">Filter</button>
+                        <div class="col-md-4">
+                            <button id="filter" class="btn btn-info"><i class="fas fa-search"></i></button>
+                            <button id="clearFilterButton" class="btn btn-secondary">Clear</button>
                         </div>
                     </div>
                 @endif
@@ -281,6 +282,12 @@
 
         // Event listener for the filter button
         $('#filter').click(function() {
+            table.draw();
+        });
+
+        $('#clearFilterButton').click(function() {
+            $('#start_date').val('');
+            $('#end_date').val('');
             table.draw();
         });
 
