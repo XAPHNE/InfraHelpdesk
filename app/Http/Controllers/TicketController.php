@@ -85,7 +85,7 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Ticket::with(['creator', 'closer']);
+            $query = Ticket::with(['creator', 'closer', 'actionTakens']);
             // Check if the logged-in user is an employee
             if (auth()->user()->isEmployee) {
                 // Fetch tickets created by the logged-in employee
@@ -103,6 +103,18 @@ class TicketController extends Controller
     
             return DataTables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('action_taken', function($row) {
+                        if ($row->actionTakens->isEmpty()) {
+                            return 'N/A';
+                        }
+        
+                        $actions = '';
+                        foreach ($row->actionTakens as $action) {
+                            $actions .= $action->action_taken . ' (' . $action->created_at->format('d-m-Y h:i A') . ')<br>';
+                        }
+        
+                        return $actions ?: 'N/A';
+                    })
                     ->addColumn('action', function($row){
                         $btn = '';
                         if (auth()->user()->isAdmin) {
@@ -134,7 +146,7 @@ class TicketController extends Controller
                     ->editColumn('closed_at', function($row) {
                         return $row->closed_at ? : 'N/A';
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action_taken', 'action'])
                     ->make(true);
         }
     

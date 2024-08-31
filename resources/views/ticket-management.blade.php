@@ -53,6 +53,7 @@
                                 @if (auth()->user()->isAdmin || auth()->user()->isVendor)
                                     <th>Call Type</th>
                                     <th>Time Taken</th>
+                                    <th style="min-width: 250px; max-width:350px">Action Taken</th>
                                 @endif
                                 <th>Status</th>
                                 <th>Remarks</th>
@@ -184,6 +185,12 @@
 
 @push('styles')
     {{-- Add Stylesheet here --}}
+    <style>
+        .action-taken-column {
+            width: 250px; /* Adjust the width as needed */
+            white-space: normal; /* Allow text wrapping */
+        }
+    </style>
 @endpush
 
 @push('scripts')
@@ -234,7 +241,8 @@
                 // Conditionally add 'Call Type' and 'Time Taken' columns
                 ...(isAdmin || isVendor ? [
                     { data: 'call_type', name: 'call_type' },
-                    { data: 'time_taken', name: 'time_taken' }
+                    { data: 'time_taken', name: 'time_taken' },
+                    { data: 'action_taken', name: 'action_taken' }
                 ] : []),
                 { data: 'status', name: 'status' },
                 { data: 'remarks', name: 'remarks' },
