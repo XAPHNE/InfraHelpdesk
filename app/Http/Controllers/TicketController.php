@@ -90,6 +90,11 @@ class TicketController extends Controller
             if (auth()->user()->isEmployee) {
                 // Fetch tickets created by the logged-in employee
                 $query->where('created_by', auth()->user()->id);
+            } elseif (auth()->user()->isVendor) {
+                // If the logged-in user is a vendor and vendor_loc is not null, filter tickets by vendor location
+                if (auth()->user()->vendor_loc) {
+                    $query->where('location', auth()->user()->vendor_loc);
+                }
             } else {
                 // Fetch all tickets for non-employee users (Admins or Vendors)
                 if ($request->has('start_date') && $request->has('end_date') && $request->start_date && $request->end_date) {
