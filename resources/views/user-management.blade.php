@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table id="usersTable" class="table table-bordered table-hover">
+                <table id="usersTable" class="display nowrap table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -147,8 +147,9 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('user-management.index') }}",
-            lengthMenu: [5, 10, 25, 50, 100],
-            pageLength: 5,
+            lengthMenu: [10, 25, 50, 100, 250, 500, 1000],
+            lengthChange: true,
+            scrollX: true,
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
@@ -165,39 +166,13 @@
                 }},
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
-            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-            buttons: [
-                {
-                    extend: 'copy',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
+            layout: {
+                topEnd: {
+                    buttons: ['excel', 'print'],
+                    search :true
                 },
-                {
-                    extend: 'csv',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'excel',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: ':not(:last-child)'  // Exclude the last column (Actions)
-                    }
-                }
-            ],
+            },
+            
         });
 
         $('#addNewUser').click(function() {

@@ -11,8 +11,8 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col grid-margin stretch-card">
-        <div class="card">
-            <div class="card-header bg-info">
+        <div class="card card-info">
+            <div class="card-header">
                 <h2 class="d-inline">Ticket List</h2>
                 <div class="card-tools">
                     @if(!auth()->user()->isVendor)
@@ -35,37 +35,35 @@
                         </div>
                     </div>
                 @endif
-                <div class="table-responsive">
-                    <table id="ticketsTable" class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Ticket Number</th>
-                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                    <th>Created By</th>
-                                @endif
-                                <th>Created At</th>
-                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                    <th>Location</th>
-                                @endif
-                                <th>Product</th>
-                                <th>Serial number</th>
-                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                    <th>Call Type</th>
-                                    <th>Time Taken</th>
-                                    <th style="min-width: 250px; max-width:350px">Action Taken</th>
-                                @endif
-                                <th>Status</th>
-                                <th>Remarks</th>
-                                <th>Closed By</th>
-                                <th>Closed At</th>
-                                @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                    <th>Actions</th>
-                                @endif
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+                <table id="ticketsTable" class="display nowrap table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ticket Number</th>
+                            @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                <th>Created By</th>
+                            @endif
+                            <th>Created At</th>
+                            @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                <th>Location</th>
+                            @endif
+                            <th>Product</th>
+                            <th>Serial number</th>
+                            @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                <th>Call Type</th>
+                                <th>Time Taken</th>
+                                <th style="min-width: 250px; max-width:350px">Action Taken</th>
+                            @endif
+                            <th>Status</th>
+                            <th>Remarks</th>
+                            <th>Closed By</th>
+                            <th>Closed At</th>
+                            @if (auth()->user()->isAdmin || auth()->user()->isVendor)
+                                <th>Actions</th>
+                            @endif
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
@@ -218,8 +216,9 @@
                     }
                 }
             },
-            lengthMenu: [5, 10, 25, 50, 100],
-            pageLength: 5,
+            lengthMenu: [10, 25, 50, 100, 250, 500, 1000],
+            lengthChange: true,
+            scrollX: true,
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { 
@@ -251,41 +250,12 @@
                 // Conditionally add 'Actions' column
                 ...(isAdmin || isVendor ? [{ data: 'action', name: 'action', orderable: false, searchable: false }] : [])
             ],
-            // dom: 'Bfrtip',
-            // buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-            // buttons: [
-            //     {
-            //         extend: 'copy',
-            //         exportOptions: {
-            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
-            //         }
-            //     },
-            //     {
-            //         extend: 'csv',
-            //         exportOptions: {
-            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
-            //         }
-            //     },
-            //     {
-            //         extend: 'excel',
-            //         exportOptions: {
-            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
-            //         }
-            //     },
-            //     {
-            //         extend: 'pdf',
-            //         exportOptions: {
-            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
-            //         }
-            //     },
-            //     {
-            //         extend: 'print',
-            //         exportOptions: {
-            //             columns: ':not(:last-child)'  // Exclude the last column (Actions)
-            //         }
-            //     }
-            // ],
+            layout: {
+                topEnd: {
+                    buttons: ['excel', 'print'],
+                    search :true
+                },
+            },
         });
 
         // Event listener for the filter button

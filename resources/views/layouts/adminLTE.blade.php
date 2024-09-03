@@ -27,12 +27,14 @@
     <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
 
-    <!-- DataTable -->
-    {{-- <link href="{{ asset('plugins/datatables.net/datatables.min.css') }}" rel="stylesheet"> --}}
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <!-- DataTable CSS -->
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.5/css/dataTables.dataTables.min.css">
+
+    <!-- Bootstrap Toogle Button CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    
     <!-- DataTables Buttons extension -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.css">
 
     @stack('styles')
 </head>
@@ -84,9 +86,9 @@
 </div>
 
 <!-- jQuery -->
-<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
-<!-- jQuery UI 1.11.4 -->
-<script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- jQuery UI 1.14.0 -->
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.min.js"></script>
 <script>$.widget.bridge('uibutton', $.ui.button)</script>
 <!-- Bootstrap 4 -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -114,13 +116,17 @@
 {{-- <script src="{{ asset('dist/js/pages/dashboard.js') }}"></script> --}}
 
 <!-- DataTables JS -->
-{{-- <script src="{{ asset('plugins/datatables.net/datatables.min.js') }}"></script> --}}
-<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="//cdn.datatables.net/2.1.5/js/dataTables.min.js"></script>
 <!-- DataTables Buttons JS -->
-<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
+
+<!-- Bootstrap Toogle Button JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <!-- Sweet Alert JS -->
 <script src="{{ asset('plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
