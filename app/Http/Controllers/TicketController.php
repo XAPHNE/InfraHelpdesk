@@ -19,6 +19,7 @@ class TicketController extends Controller
         $currentYear = Carbon::now()->year;
         $currentQuarter = Carbon::now()->quarter;
         $currentMonth = Carbon::now()->month;
+        $lastMonth = Carbon::now()->subMonth()->month;
 
         // Open tickets for the current quarter
         $openTicketsQuarter = Ticket::where('status', 'Open')
@@ -45,28 +46,55 @@ class TicketController extends Controller
             ->count();
 
         // SLA overdue tickets for the current year
-        $slaOverdueYear = Ticket::where('sla_overdue', '<', now())
-            ->whereYear('sla_overdue', $currentYear)
-            ->count();
+        $slaOverdueYear = Ticket::where(function ($query) {
+            $query->whereNull('closed_at') // If not closed, compare with now()
+                ->where('sla_overdue', '<', now())
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('closed_at') // If closed, compare with closed_at
+                            ->whereColumn('closed_at', '>', 'sla_overdue');
+                });
+        })
+        ->whereYear('sla_overdue', $currentYear)
+        ->count();
 
         // SLA overdue tickets for the current quarter
-        $slaOverdueQuarter = Ticket::where('sla_overdue', '<', now())
-            ->whereYear('sla_overdue', $currentYear)
-            ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
-            ->count();
+        $slaOverdueQuarter = Ticket::where(function ($query) {
+            $query->whereNull('closed_at')
+                ->where('sla_overdue', '<', now())
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('closed_at')
+                            ->whereColumn('closed_at', '>', 'sla_overdue');
+                });
+        })
+        ->whereYear('sla_overdue', $currentYear)
+        ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
+        ->count();
 
         // SLA overdue tickets for the current month
-        $slaOverdueMonth = Ticket::where('sla_overdue', '<', now())
-            ->whereYear('sla_overdue', $currentYear)
-            ->whereMonth('sla_overdue', $currentMonth)
-            ->count();
+        $slaOverdueMonth = Ticket::where(function ($query) {
+            $query->whereNull('closed_at')
+                ->where('sla_overdue', '<', now())
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('closed_at')
+                            ->whereColumn('closed_at', '>', 'sla_overdue');
+                });
+        })
+        ->whereYear('sla_overdue', $currentYear)
+        ->whereMonth('sla_overdue', $currentMonth)
+        ->count();
 
         // SLA overdue tickets for the last month
-        $lastMonth = Carbon::now()->subMonth()->month;
-        $slaOverdueLastMonth = Ticket::where('sla_overdue', '<', now())
-            ->whereYear('sla_overdue', $currentYear)
-            ->whereMonth('sla_overdue', $lastMonth)
-            ->count();
+        $slaOverdueLastMonth = Ticket::where(function ($query) {
+            $query->whereNull('closed_at')
+                ->where('sla_overdue', '<', now())
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('closed_at')
+                            ->whereColumn('closed_at', '>', 'sla_overdue');
+                });
+        })
+        ->whereYear('sla_overdue', $currentYear)
+        ->whereMonth('sla_overdue', $lastMonth)
+        ->count();
 
         return view('dashboard', compact(
             'openTicketsQuarter', 
