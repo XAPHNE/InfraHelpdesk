@@ -231,7 +231,7 @@
                 // Conditionally add 'Created By' column
                 ...(isAdmin || isVendor ? [{ data: 'created_by', name: 'created_by' }] : []),
                 { data: 'created_at', name: 'created_at', render: function(data, type, row) {
-                    return moment(data).format('YYYY-MM-DD HH:mm:ss');
+                    return moment(data).format('DD-MM-YYYY, HH:mm A');
                 }},
                 // Conditionally add 'Location' column
                 ...(isAdmin || isVendor ? [{ data: 'location', name: 'location' }] : []),
