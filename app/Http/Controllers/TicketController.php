@@ -143,7 +143,7 @@ class TicketController extends Controller
         
                         $actions = '';
                         foreach ($row->actionTakens as $action) {
-                            $actions .= $action->action_taken . ' (' . $action->created_at->format('d-m-Y h:i A') . ')<br>';
+                            $actions .= $action->action_taken . ' (' . $action->created_at->format('d-m-Y, h:i A') . ')<br>';
                         }
         
                         return $actions ?: 'N/A';
