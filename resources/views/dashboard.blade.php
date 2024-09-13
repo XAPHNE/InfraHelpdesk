@@ -32,7 +32,7 @@
                 <div class="icon">
                     <i class="ion ion-clipboard"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ url('ticket-management') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -46,7 +46,7 @@
                 <div class="icon">
                     <i class="ion ion-checkmark-circled"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ url('ticket-management') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
                 <div class="icon">
                     <i class="ion ion-clipboard"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ url('ticket-management') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -74,10 +74,11 @@
                 <div class="icon">
                     <i class="ion ion-checkmark-circled"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ url('ticket-management') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
+        @if (auth()->user()->isAdmin)
         <!-- SLA Overdue Tickets (Current Year) -->
         <div class="col-lg-3 col-6">
             <div class="small-box bg-primary">
@@ -88,7 +89,7 @@
                 <div class="icon">
                     <i class="ion ion-alert"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                {{-- <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> --}}
             </div>
         </div>
 
@@ -102,7 +103,7 @@
                 <div class="icon">
                     <i class="ion ion-alert"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                {{-- <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> --}}
             </div>
         </div>
 
@@ -116,7 +117,7 @@
                 <div class="icon">
                     <i class="ion ion-alert"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                {{-- <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> --}}
             </div>
         </div>
 
@@ -130,8 +131,9 @@
                 <div class="icon">
                     <i class="ion ion-alert"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                {{-- <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> --}}
             </div>
         </div>
+        @endif
     </div>
 @endsection
