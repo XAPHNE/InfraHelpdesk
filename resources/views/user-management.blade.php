@@ -40,7 +40,7 @@
 
 <!-- User Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="userModalLabel">Add New User</h5>
@@ -51,51 +51,77 @@
             <form id="userForm">
                 <div class="modal-body">
                     <input type="hidden" id="userId" name="userId">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="password_confirmation">Confirm Password</label>
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="must_change_passwd">Must Change Password</label>
+                                <input type="checkbox" class="form-control" id="must_change_passwd" name="must_change_passwd" data-toggle="toggle" data-style="ios" data-on="Yes" data-off="No" data-onstyle="success">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendor_loc">Vendor Location</label>
+                                <select class="form-control" id="vendor_loc" name="vendor_loc">
+                                    <option value="">Select</option>
+                                    <option value="HQ">HQ</option>
+                                    <option value="NTPS">NTPS</option>
+                                    <option value="LTPS">LTPS</option>
+                                    <option value="LKHEP">LKHEP</option>
+                                    <option value="KLHEP">KLHEP</option>
+                                    <option value="Longku">Longku</option>
+                                    <option value="Narengi">Narengi</option>
+                                    <option value="Jagiroad">Jagiroad</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password_confirmation">Confirm Password</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-                    </div>
-                    <div class="form-group">
-                        <label for="vendor_loc">Vendor Location</label>
-                        <select class="form-control" id="vendor_loc" name="vendor_loc">
-                            <option value="">Select</option>
-                            <option value="HQ">HQ</option>
-                            <option value="NTPS">NTPS</option>
-                            <option value="LTPS">LTPS</option>
-                            <option value="LKHEP">LKHEP</option>
-                            <option value="KLHEP">KLHEP</option>
-                            <option value="Longku">Longku</option>
-                            <option value="Narengi">Narengi</option>
-                            <option value="Jagiroad">Jagiroad</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="must_change_passwd">Must Change Password</label>
-                        <input type="checkbox" id="must_change_passwd" name="must_change_passwd" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
-                    </div>
-                    <div class="form-group">
-                        <label for="isAdmin">Is Admin</label>
-                        <input type="checkbox" id="isAdmin" name="isAdmin" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
-                    </div>
-                    <div class="form-group">
-                        <label for="isVendor">Is Vendor</label>
-                        <input type="checkbox" id="isVendor" name="isVendor" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
-                    </div>
-                    <div class="form-group">
-                        <label for="isEmployee">Is Employee</label>
-                        <input type="checkbox" id="isEmployee" name="isEmployee" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="secondary">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="isAdmin">Is Admin</label>
+                                <input type="checkbox" class="form-control role-toggle" id="isAdmin" name="isAdmin" data-toggle="toggle" data-style="ios" data-on="Yes" data-off="No" data-onstyle="success">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="isVendor">Is Vendor</label>
+                                <input type="checkbox" class="form-control role-toggle" id="isVendor" name="isVendor" data-toggle="toggle" data-style="ios" data-on="Yes" data-off="No" data-onstyle="success">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="isEmployee">Is Employee</label>
+                                <input type="checkbox" class="form-control role-toggle" id="isEmployee" name="isEmployee" data-toggle="toggle" data-style="ios" data-on="Yes" data-off="No" data-onstyle="success">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -131,7 +157,10 @@
 @endsection
 
 @push('styles')
-    {{-- Add Stylesheet here --}}
+<style>
+    .toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20px; }
+    .toggle.ios .toggle-handle { border-radius: 20px; }
+</style>
 @endpush
 
 @push('scripts')
@@ -143,6 +172,13 @@
     });
 
     $(document).ready(function() {
+        // Handle role toggle buttons to allow only one active at a time
+        $('.role-toggle').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('.role-toggle').not(this).prop('checked', false).change(); // Uncheck others and trigger change to update UI
+            }
+        });
+
         var table = $('#usersTable').DataTable({
             processing: true,
             serverSide: true,
@@ -270,6 +306,15 @@
             $('#isAdmin').bootstrapToggle();
             $('#isVendor').bootstrapToggle();
             $('#isEmployee').bootstrapToggle();
+        });
+
+        // Reset toggle state when the modal is closed
+        $('#userModal').on('hidden.bs.modal', function () {
+            // Reset the form fields and toggle states
+            $('#userForm')[0].reset();
+            // Reset the toggle state and refresh UI
+            $('.role-toggle').prop('checked', false).change(); // Ensure UI is updated
+            $('#must_change_passwd').prop('checked', false).change(); // Ensure UI is updated
         });
     });
 </script>
