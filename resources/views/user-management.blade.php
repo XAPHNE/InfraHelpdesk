@@ -21,15 +21,15 @@
             <div class="card-body">
                 <table id="usersTable" class="display nowrap table table-bordered table-hover">
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Vendor Location</th>
-                            <th>Is Admin</th>
-                            <th>Is Vendor</th>
-                            <th>Is Employee</th>
-                            <th>Actions</th>
+                        <tr class="table-primary">
+                            <th class="text-center">#</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Vendor Location</th>
+                            <th class="text-center">Is Admin</th>
+                            <th class="text-center">Is Vendor</th>
+                            <th class="text-center">Is Employee</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                 </table>
@@ -187,24 +187,24 @@
             lengthChange: true,
             scrollX: true,
             columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
-                { data: 'vendor_loc', name: 'vendor_loc', orderable: false, searchable: false },
-                { data: 'isAdmin', name: 'isAdmin', render: function(data, type, row) {
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', class: 'text-center', orderable: false, searchable: false },
+                { data: 'name', name: 'name', class: 'text-center' },
+                { data: 'email', name: 'email', class: 'text-center' },
+                { data: 'vendor_loc', name: 'vendor_loc', class: 'text-center', orderable: false, searchable: false },
+                { data: 'isAdmin', name: 'isAdmin', class: 'text-center', render: function(data, type, row) {
                     return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                 }},
-                { data: 'isVendor', name: 'isVendor', render: function(data, type, row) {
+                { data: 'isVendor', name: 'isVendor', class: 'text-center', render: function(data, type, row) {
                     return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                 }},
-                { data: 'isEmployee', name: 'isEmployee', render: function(data, type, row) {
+                { data: 'isEmployee', name: 'isEmployee', class: 'text-center', render: function(data, type, row) {
                     return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                 }},
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                { data: 'action', name: 'action', class: 'text-center', orderable: false, searchable: false }
             ],
             layout: {
                 topEnd: {
-                    buttons: ['excel', 'print'],
+                    buttons: ['excel'],
                     search :true
                 },
             },

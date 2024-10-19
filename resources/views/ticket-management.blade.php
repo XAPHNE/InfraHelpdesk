@@ -37,29 +37,29 @@
                 @endif
                 <table id="ticketsTable" class="display nowrap table table-bordered table-hover">
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Ticket Number</th>
+                        <tr class="table-primary">
+                            <th class="text-center">#</th>
+                            <th class="text-center">Ticket Number</th>
                             @if (auth()->user()->isAdmin || auth()->user()->isVendor)
                                 <th>Created By</th>
                             @endif
-                            <th>Created At</th>
+                            <th class="text-center">Created At</th>
                             @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                <th>Location</th>
+                                <th class="text-center">Location</th>
                             @endif
-                            <th>Product</th>
-                            <th>Serial number</th>
+                            <th class="text-center">Product</th>
+                            <th class="text-center">Serial number</th>
                             @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                <th>Call Type</th>
-                                <th>Time Taken</th>
-                                <th style="min-width: 250px; max-width:350px">Action Taken</th>
+                                <th class="text-center">Call Type</th>
+                                <th class="text-center">Time Taken</th>
+                                <th class="text-center" style="min-width: 250px; max-width:350px">Action Taken</th>
                             @endif
-                            <th>Status</th>
-                            <th>Remarks</th>
-                            <th>Closed By</th>
-                            <th>Closed At</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Remarks</th>
+                            <th class="text-center">Closed By</th>
+                            <th class="text-center">Closed At</th>
                             @if (auth()->user()->isAdmin || auth()->user()->isVendor)
-                                <th>Actions</th>
+                                <th class="text-center">Actions</th>
                             @endif
                         </tr>
                     </thead>
@@ -220,39 +220,40 @@
             lengthChange: true,
             scrollX: true,
             columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', class: 'text-center', orderable: false, searchable: false },
                 { 
                     data: 'ticket_number',
                     name: 'ticket_number',
+                    class: 'text-right',
                     render: function(data, type, row) {
                         return '<a href="/ticket-management/' + row.id + '/details">' + data + '</a>';
                     }
                 },
                 // Conditionally add 'Created By' column
-                ...(isAdmin || isVendor ? [{ data: 'created_by', name: 'created_by' }] : []),
-                { data: 'created_at', name: 'created_at', render: function(data, type, row) {
+                ...(isAdmin || isVendor ? [{ data: 'created_by', name: 'created_by', class: 'text-center' }] : []),
+                { data: 'created_at', name: 'created_at', class: 'text-center', render: function(data, type, row) {
                     return moment(data).format('DD-MM-YYYY, HH:mm A');
                 }},
                 // Conditionally add 'Location' column
-                ...(isAdmin || isVendor ? [{ data: 'location', name: 'location' }] : []),
-                { data: 'subject', name: 'subject' },
-                { data: 'serial_num', name: 'serial_num' },
+                ...(isAdmin || isVendor ? [{ data: 'location', name: 'location', class: 'text-center' }] : []),
+                { data: 'subject', name: 'subject', class: 'text-center' },
+                { data: 'serial_num', name: 'serial_num', class: 'text-center' },
                 // Conditionally add 'Call Type' and 'Time Taken' columns
                 ...(isAdmin || isVendor ? [
-                    { data: 'call_type', name: 'call_type' },
-                    { data: 'time_taken', name: 'time_taken' },
+                    { data: 'call_type', name: 'call_type', class: 'text-center' },
+                    { data: 'time_taken', name: 'time_taken', class: 'text-center' },
                     { data: 'action_taken', name: 'action_taken' }
                 ] : []),
-                { data: 'status', name: 'status' },
+                { data: 'status', name: 'status', class: 'text-center' },
                 { data: 'remarks', name: 'remarks' },
-                { data: 'closed_by', name: 'closed_by' },
-                { data: 'closed_at', name: 'closed_at' },
+                { data: 'closed_by', name: 'closed_by', class: 'text-center' },
+                { data: 'closed_at', name: 'closed_at', class: 'text-center' },
                 // Conditionally add 'Actions' column
-                ...(isAdmin || isVendor ? [{ data: 'action', name: 'action', orderable: false, searchable: false }] : [])
+                ...(isAdmin || isVendor ? [{ data: 'action', name: 'action', class: 'text-center', orderable: false, searchable: false }] : [])
             ],
             layout: {
                 topEnd: {
-                    buttons: ['excel', 'print'],
+                    buttons: ['excel'],
                     search :true
                 },
             },
