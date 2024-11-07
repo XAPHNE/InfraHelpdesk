@@ -286,6 +286,7 @@
                 $('#ticketModal').modal('show');
                 $('#ticket_id').val(data.id);
                 $('#location-group').hide(); // Hide the location field for editing
+                $('#location').val(data.location);
                 $('#status-group').show(); // Show the status field for editing
                 $('#subject').val(data.subject);
                 $('#serial_num').val(data.serial_num);
