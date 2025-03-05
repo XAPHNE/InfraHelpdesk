@@ -420,6 +420,12 @@ class TicketController extends Controller
                 // Calculate the time_taken and store it in hours (or any other unit you prefer)
                 $timeTaken = $ticket->created_at->diffInMinutes(now());
                 $updateFields['time_taken'] = $timeTaken;
+            } elseif ($request->status === 'Open') {
+                // For reopening, reset these fields:
+                $updateFields['time_taken'] = null;
+                $updateFields['isClosedByEmployee'] = false; // or null if preferred
+                $updateFields['closedByEmployee_at'] = null;
+                $updateFields['closed_at'] = null;
             }
         }
 

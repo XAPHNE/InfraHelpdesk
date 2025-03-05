@@ -47,7 +47,7 @@
         
                     <!-- Add new action taken (only for vendors) -->
                     @if(auth()->user()->isVendor)
-                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#actionModal">
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#actionModal" @if(auth()->user()->isVendor && $ticket->status == 'Closed') disabled @endif>
                             <i class="fas fa-plus"></i> Add Action Taken
                         </button>
                     @endif
@@ -66,7 +66,8 @@
                             <!-- Call Type -->
                             <div class="form-group">
                                 <label for="call_type">Type of call</label>
-                                <select class="form-control" id="call_type" name="call_type">
+                                <select class="form-control" id="call_type" name="call_type" 
+                                    @if(auth()->user()->isVendor && $ticket->status == 'Closed') disabled @endif>
                                     <option value="" {{ is_null($ticket->call_type) ? 'selected' : '' }}>-- Select --</option>
                                     <option value="Demo" {{ $ticket->call_type == 'Demo' ? 'selected' : '' }}>Demo</option>
                                     <option value="Installation" {{ $ticket->call_type == 'Installation' ? 'selected' : '' }}>Installation</option>
@@ -77,19 +78,23 @@
                             <!-- Remarks -->
                             <div class="form-group">
                                 <label for="remarks">Remarks:</label>
-                                <textarea name="remarks" id="remarks" class="form-control">{{ old('remarks', $ticket->remarks) }}</textarea>
+                                <textarea name="remarks" id="remarks" class="form-control" @if(auth()->user()->isVendor && $ticket->status == 'Closed') disabled @endif>{{ old('remarks', $ticket->remarks) }}</textarea>
                             </div>
                         
                             <!-- Status -->
                             <div class="form-group">
                                 <label for="status">Status:</label>
-                                <select name="status" id="status" class="form-control">
+                                <select name="status" id="status" class="form-control"
+                                    @if(auth()->user()->isVendor && $ticket->status == 'Closed') disabled @endif>
                                     <option value="Open" {{ $ticket->status == 'Open' ? 'selected' : '' }}>Open</option>
                                     <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>Closed</option>
                                 </select>
                             </div>
                         
-                            <button type="submit" class="btn btn-primary">Update Ticket</button>
+                            <button type="submit" class="btn btn-primary" @if(auth()->user()->isVendor && $ticket->status == 'Closed') disabled @endif>Update Ticket</button>
+                            @if((auth()->user()->isAdmin || auth()->user()->isVendor) && $ticket->status == 'Closed')
+    <button id="reopenTicketButton" class="btn btn-success">Reopen Ticket</button>
+@endif
                         </form>
                     @endif
                     @if (auth()->user()->isEmployee)
@@ -208,6 +213,34 @@
                     icon: 'error',
                     title: 'Error',
                     text: 'Something went wrong!',
+                });
+            }
+        });
+    });
+
+    $('#reopenTicketButton').click(function(){
+        var ticketId = {{ $ticket->id }};
+        var updateUrl = "{{ route('ticket-management.update', ':id') }}".replace(':id', ticketId);
+        $.ajax({
+            type: "POST",
+            url: updateUrl,
+            data: {
+                _method: 'PUT',
+                status: 'Open'
+            },
+            success: function(response){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Ticket reopened successfully'
+                });
+                location.reload();
+            },
+            error: function(response){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not reopen ticket'
                 });
             }
         });
