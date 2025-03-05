@@ -21,80 +21,181 @@ class TicketController extends Controller
         $currentMonth = Carbon::now()->month;
         $lastMonth = Carbon::now()->subMonth()->month;
 
+        // Create a base query and apply role-based filters
+        $baseQuery = Ticket::query();
+
+        if (auth()->user()->isVendor && auth()->user()->vendor_loc) {
+            // Vendors see tickets that match their vendor location
+            $baseQuery->where('location', auth()->user()->vendor_loc);
+        }
+
         // Open tickets for the current quarter
-        $openTicketsQuarter = Ticket::where('status', 'Open')
+        $openTicketsQuarter = (clone $baseQuery)
+            ->where('status', 'Open')
             ->whereYear('created_at', $currentYear)
             ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
             ->count();
 
         // Closed tickets for the current quarter
-        $closedTicketsQuarter = Ticket::where('status', 'Closed')
+        $closedTicketsQuarter = (clone $baseQuery)
+            ->where('status', 'Closed')
             ->whereYear('created_at', $currentYear)
             ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
             ->count();
 
         // Open tickets for the current month
-        $openTicketsMonth = Ticket::where('status', 'Open')
+        $openTicketsMonth = (clone $baseQuery)
+            ->where('status', 'Open')
             ->whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $currentMonth)
             ->count();
 
         // Closed tickets for the current month
-        $closedTicketsMonth = Ticket::where('status', 'Closed')
+        $closedTicketsMonth = (clone $baseQuery)
+            ->where('status', 'Closed')
             ->whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $currentMonth)
             ->count();
 
         // SLA overdue tickets for the current year
-        $slaOverdueYear = Ticket::where(function ($query) {
-            $query->whereNull('closed_at') // If not closed, compare with now()
-                ->where('sla_overdue', '<', now())
-                ->orWhere(function ($query) {
-                    $query->whereNotNull('closed_at') // If closed, compare with closed_at
-                            ->whereColumn('closed_at', '>', 'sla_overdue');
-                });
-        })
-        ->whereYear('sla_overdue', $currentYear)
-        ->count();
+        $slaOverdueYear = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at') // If not closed, compare with now()
+                    ->where('sla_overdue', '<', now())
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('closed_at') // If closed, compare with closed_at
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                    });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->count();
 
         // SLA overdue tickets for the current quarter
-        $slaOverdueQuarter = Ticket::where(function ($query) {
-            $query->whereNull('closed_at')
-                ->where('sla_overdue', '<', now())
-                ->orWhere(function ($query) {
-                    $query->whereNotNull('closed_at')
-                            ->whereColumn('closed_at', '>', 'sla_overdue');
-                });
-        })
-        ->whereYear('sla_overdue', $currentYear)
-        ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
-        ->count();
+        $slaOverdueQuarter = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                    ->where('sla_overdue', '<', now())
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                    });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
+            ->count();
 
         // SLA overdue tickets for the current month
-        $slaOverdueMonth = Ticket::where(function ($query) {
-            $query->whereNull('closed_at')
-                ->where('sla_overdue', '<', now())
-                ->orWhere(function ($query) {
-                    $query->whereNotNull('closed_at')
-                            ->whereColumn('closed_at', '>', 'sla_overdue');
-                });
-        })
-        ->whereYear('sla_overdue', $currentYear)
-        ->whereMonth('sla_overdue', $currentMonth)
-        ->count();
+        $slaOverdueMonth = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                    ->where('sla_overdue', '<', now())
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                    });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $currentMonth)
+            ->count();
 
         // SLA overdue tickets for the last month
-        $slaOverdueLastMonth = Ticket::where(function ($query) {
-            $query->whereNull('closed_at')
-                ->where('sla_overdue', '<', now())
-                ->orWhere(function ($query) {
-                    $query->whereNotNull('closed_at')
-                            ->whereColumn('closed_at', '>', 'sla_overdue');
-                });
-        })
-        ->whereYear('sla_overdue', $currentYear)
-        ->whereMonth('sla_overdue', $lastMonth)
-        ->count();
+        $slaOverdueLastMonth = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                    ->where('sla_overdue', '<', now())
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                    });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $lastMonth)
+            ->count();
+
+        // Detailed queries for the tables
+        $openTicketsQuarterDetails = (clone $baseQuery)
+            ->where('status', 'Open')
+                ->whereYear('created_at', $currentYear)
+                ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
+                ->latest()
+                ->get();
+
+        $closedTicketsQuarterDetails = (clone $baseQuery)
+            ->where('status', 'Closed')
+                ->whereYear('created_at', $currentYear)
+                ->whereRaw('QUARTER(created_at) = ?', [$currentQuarter])
+                ->latest()
+                ->get();
+
+        $openTicketsMonthDetails = (clone $baseQuery)
+            ->where('status', 'Open')
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->latest()
+                ->get();
+
+        $closedTicketsMonthDetails = (clone $baseQuery)
+            ->where('status', 'Closed')
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->latest()
+                ->get();
+
+        $slaOverdueYearDetails = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                        ->where('sla_overdue', '<', now())
+                        ->orWhere(function ($query) {
+                            $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                        });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->latest()
+            ->get();
+        
+        $slaOverdueQuarterDetails = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                        ->where('sla_overdue', '<', now())
+                        ->orWhere(function ($query) {
+                            $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                        });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereRaw('QUARTER(sla_overdue) = ?', [$currentQuarter])
+            ->latest()
+            ->get();
+        
+        $slaOverdueMonthDetails = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                        ->where('sla_overdue', '<', now())
+                        ->orWhere(function ($query) {
+                            $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                        });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $currentMonth)
+            ->latest()
+            ->get();
+        
+        $slaOverdueLastMonthDetails = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('closed_at')
+                        ->where('sla_overdue', '<', now())
+                        ->orWhere(function ($query) {
+                            $query->whereNotNull('closed_at')
+                                ->whereColumn('closed_at', '>', 'sla_overdue');
+                        });
+            })
+            ->whereYear('sla_overdue', $currentYear)
+            ->whereMonth('sla_overdue', $lastMonth)
+            ->latest()
+            ->get();
+            
 
         return view('dashboard', compact(
             'openTicketsQuarter', 
@@ -104,7 +205,15 @@ class TicketController extends Controller
             'slaOverdueYear',
             'slaOverdueQuarter',
             'slaOverdueMonth',
-            'slaOverdueLastMonth'
+            'slaOverdueLastMonth',
+            'openTicketsQuarterDetails',
+            'closedTicketsQuarterDetails',
+            'openTicketsMonthDetails',
+            'closedTicketsMonthDetails',
+            'slaOverdueYearDetails',
+            'slaOverdueQuarterDetails',
+            'slaOverdueMonthDetails',
+            'slaOverdueLastMonthDetails',
         ));
     }
     /**
