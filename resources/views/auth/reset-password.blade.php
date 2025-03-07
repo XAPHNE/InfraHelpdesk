@@ -14,7 +14,7 @@
 
                 <!-- Email Address -->
                 <div class="input-group mb-3">
-                    <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="Email" required autofocus autocomplete="username">
+                    <input type="email" name="email" class="form-control" value="{{ old('email', request()->query('email')) }}" placeholder="Email" required autofocus autocomplete="username" readonly>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-envelope"></span>
