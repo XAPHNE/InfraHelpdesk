@@ -15,13 +15,15 @@ class TicketCreated extends Mailable
     use Queueable, SerializesModels;
 
     public $ticket;
+    public $recipientName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Ticket $ticket)
+    public function __construct(Ticket $ticket, string $recipientName)
     {
-        $this->ticket = $ticket;
+        $this->ticket = $ticket->load('creator');
+        $this->recipientName = $recipientName;
     }
 
     /**

@@ -339,18 +339,18 @@ class TicketController extends Controller
         }
 
         // Send email to the ticket creator
-        // Mail::to(Auth::user()->email)->send(new TicketCreated($ticket));
+        Mail::to(Auth::user()->email)->send(new TicketCreated($ticket, Auth::user()->name));
 
         // Send email to the vendor with the same location
-        // if ($ticket->location) {
-        //     $vendor = User::where('vendor_loc', $ticket->location)->first();
-        //     if ($vendor) {
-        //         Mail::to($vendor->email)->send(new TicketCreated($ticket));
-        //     }
-        // }
+        if ($ticket->location) {
+            $vendor = User::where('vendor_loc', $ticket->location)->first();
+            if ($vendor) {
+                Mail::to($vendor->email)->send(new TicketCreated($ticket, $vendor->name));
+            }
+        }
 
         // Send email to hw-support@apgcl.org
-        // Mail::to('support.hardware@apgcl.org')->send(new TicketCreated($ticket));
+        Mail::to('support.hardware@apgcl.org')->send(new TicketCreated($ticket, 'Support Team'));
     
         return response()->json(['message' => 'Ticket created successfully.']);
     }
